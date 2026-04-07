@@ -1,4 +1,4 @@
-import './style.css'
+import './styleindex.css'
 
 document.querySelectorAll('a[href^="#"]').forEach(anchor => {
     anchor.addEventListener('click', function (e) {
