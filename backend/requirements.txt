@@ -1,0 +1,7 @@
+Flask
+requests
+gunicorn
+flask-cors
+flask_session
+google.genai
+openai
