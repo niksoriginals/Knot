@@ -14,10 +14,8 @@ CORS(
     app,
     supports_credentials=True,
     origins=[
-        "https://nofyadmin.pages.dev",
-        "https://nofyadmin.surge.sh",
-        "https://admin.niksoriginals.in",
-        "https://nofytest.netlify.app"
+        "https://knot.niksoriginals.in",
+        "https://adminknot.niksoriginals.in",
     ]
 )
 
