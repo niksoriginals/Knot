@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Knot | Login</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="style/stylelogin.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+</head>
+<body class="bg-slate-950 flex items-center justify-center min-h-screen overflow-hidden">
+
+    <div class="absolute top-0 -left-4 w-72 h-72 bg-blue-600 rounded-full mix-blend-multiply filter blur-3xl opacity-20 animate-blob"></div>
+    <div class="absolute top-0 -right-4 w-72 h-72 bg-cyan-600 rounded-full mix-blend-multiply filter blur-3xl opacity-20 animate-blob animation-delay-2000"></div>
+    <div class="absolute -bottom-8 left-20 w-72 h-72 bg-purple-600 rounded-full mix-blend-multiply filter blur-3xl opacity-20 animate-blob animation-delay-4000"></div>
+
+    <div class="login-card relative bg-white/10 backdrop-blur-xl p-10 rounded-3xl border border-white/20 shadow-2xl w-full max-w-md transform transition-all">
+        
+        <div class="text-center mb-8">
+            <div class="inline-flex items-center justify-center w-16 h-16 bg-gradient-to-br from-blue-500 to-cyan-500 rounded-2xl mb-4 shadow-lg shadow-blue-500/30">
+                <span class="text-white text-3xl font-black">K</span>
+            </div>
+            <h1 class="text-3xl font-bold text-white tracking-tight">Welcome Back</h1>
+            <p class="text-slate-400 mt-2">Log in to your Knot account</p>
+        </div>
+
+        <form id="loginForm" class="space-y-6">
+            <div class="relative">
+                <i class="fas fa-envelope absolute left-4 top-1/2 -translate-y-1/2 text-slate-500"></i>
+                <input type="email" id="email" required placeholder="College Email" 
+                    class="w-full bg-slate-900/50 border border-slate-700 rounded-xl py-3 px-12 text-white placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all">
+            </div>
+
+            <div class="relative">
+                <i class="fas fa-lock absolute left-4 top-1/2 -translate-y-1/2 text-slate-500"></i>
+                <input type="password" id="password" required placeholder="Password" 
+                    class="w-full bg-slate-900/50 border border-slate-700 rounded-xl py-3 px-12 text-white placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all">
+            </div>
+
+            <div class="flex items-center justify-between text-sm">
+                <label class="flex items-center text-slate-400 cursor-pointer">
+                    <input type="checkbox" class="mr-2 rounded border-slate-700 bg-slate-900 text-blue-500">
+                    Remember me
+                </label>
+                <a href="#" class="text-blue-400 hover:underline">Forgot password?</a>
+            </div>
+
+            <button type="submit" id="loginBtn" class="w-full bg-gradient-to-r from-blue-600 to-cyan-500 text-white font-bold py-3 rounded-xl shadow-lg shadow-blue-600/20 hover:shadow-blue-600/40 hover:scale-[1.02] active:scale-95 transition-all">
+                Sign In
+            </button>
+        </form>
+
+        <p class="text-center text-slate-400 mt-8 text-sm">
+            Don't have an account? <a href="/signup.html" class="text-blue-400 font-bold hover:underline">Create one</a>
+        </p>
+    </div>
+
+    <script src="scripts/scriptlogin.js"></script>
+</body>
+</html>
