@@ -230,7 +230,10 @@ def get_analytics():
         "total_users": total_users,
         "server_time": datetime.now().strftime("%Y-%m-%d %H:%M:%S")
     })
-
+#------------------------------------------------------------------------------------
+@app.route("/")
+def home():
+    return "✅ Knot is Running"
 # --- 6. RUN ---
 if __name__ == "__main__":
     port = int(os.environ.get("PORT", 5000))
