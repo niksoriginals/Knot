@@ -25,23 +25,12 @@ CORS(app,
 app.secret_key = os.getenv("FLASK_SECRET", "NISO_SECRET_KEY_2026")
 
 app.config.update(
-    # Flask-Mail Settings
-    MAIL_SERVER='smtp.gmail.com',
-    MAIL_PORT=587,
-    MAIL_USE_TLS=True,
-    MAIL_USERNAME="niksoriginals@gmail.com", 
-    MAIL_PASSWORD="yxdc afft mfzg wzrz", 
-    
-    # Session Settings
+    # ession Settings
     SESSION_COOKIE_HTTPONLY=True,
     SESSION_COOKIE_SAMESITE="None",
     SESSION_COOKIE_SECURE=True,
     PERMANENT_SESSION_LIFETIME=timedelta(hours=8)
 )
-
-mail = Mail(app)
-
-
 
 ADMIN_USER = "admin"
 ADMIN_PASS_HASH = "admin" 
