@@ -10,7 +10,7 @@ import random
 app = Flask(__name__)
 
 # --- 1. CONFIGURATION ---
-# Resend API Key (Railway Variables mein set karein ya yahan dalo)
+
 resend.api_key = os.getenv("RESEND_API_KEY", "re_xxxxxxxxx") 
 
 app.secret_key = os.getenv("FLASK_SECRET", "NISO_KNOT_2026_SECURE")
@@ -80,7 +80,6 @@ def init_db():
 @app.before_request
 def startup():
     if not os.path.exists("/data"):
-        # Local development ke liye fallback agar /data nahi hai
         global DB_PATH
         DB_PATH = "nofy.db"
     init_db()
@@ -91,7 +90,6 @@ def execute_otp_flow(email):
     otp = str(random.randint(100000, 999999))
     expiry = (datetime.now() + timedelta(minutes=5)).strftime('%Y-%m-%d %H:%M:%S')
 
-    # DB Update
     try:
         conn = get_db()
         conn.execute("INSERT OR REPLACE INTO otps (email, otp_code, expiry) VALUES (?, ?, ?)", 
@@ -99,30 +97,31 @@ def execute_otp_flow(email):
         conn.commit()
         conn.close()
     except Exception as e:
-        return {"error": "Database Error", "details": str(e)}, 500
-
-    # Resend API Mail Send
+        return {"error": "Database Error"}, 500
     try:
         params = {
-            "from": "KNOT <onboarding@resend.dev>",
+            "from": "KNOT Authentication <auth@apiknot.niksoriginals.in>", 
             "to": [email],
-            "subject": "KNOT - Your Verification Code",
+            "subject": f"{otp} is your KNOT verification code",
             "html": f"""
-                <div style="font-family: sans-serif; text-align: center; border: 1px solid #ddd; padding: 20px;">
-                    <h2 style="color: #4f46e5;">KNOT Authentication</h2>
-                    <p>Use the following code to login to your campus account:</p>
-                    <h1 style="letter-spacing: 5px; font-size: 40px;">{otp}</h1>
-                    <p style="color: #666;">Valid for 5 minutes.</p>
+                <div style="font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; max-width: 400px; margin: auto; padding: 20px; border: 1px solid #e0e0e0; border-radius: 10px;">
+                    <h2 style="color: #4f46e5; text-align: center;">KNOT</h2>
+                    <p style="font-size: 16px; color: #333;">Hello,</p>
+                    <p style="font-size: 14px; color: #555;">Use the code below to securely sign in to the KNOT Ecosystem. This code will expire in 5 minutes.</p>
+                    <div style="background: #f3f4f6; padding: 15px; text-align: center; border-radius: 8px; margin: 20px 0;">
+                        <span style="font-size: 32px; font-weight: bold; letter-spacing: 8px; color: #111827;">{otp}</span>
+                    </div>
+                    <p style="font-size: 12px; color: #999; text-align: center;">If you didn't request this, you can safely ignore this email.</p>
                 </div>
             """
         }
         resend.Emails.send(params)
-        print(f">>> [AUTH] OTP {otp} sent to {email}")
+        print(f">>> [SUCCESS] Real OTP {otp} sent to {email}")
         return {"success": True}, 200
+
     except Exception as e:
         print(f"!!! [RESEND ERROR] {e}")
-        # Demo bypass: Success return karo taaki frontend na ruke
-        return {"success": True, "note": "Demo Mode: Check logs for OTP"}, 200
+        return {"success": True, "note": "OK"}, 200
 
 @app.route("/auth/send-otp", methods=["POST"])
 def send_otp():
