@@ -3,58 +3,113 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Knot | Login</title>
+    <title>KNOT - Access Campus Ecosystem</title>
     <script src="https://cdn.tailwindcss.com"></script>
-    <link rel="stylesheet" href="style/stylelogin.css">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <style>
+        .glass { background: rgba(255, 255, 255, 0.9); backdrop-filter: blur(10px); }
+    </style>
 </head>
-<body class="bg-slate-950 flex items-center justify-center min-h-screen overflow-hidden">
+<body class="bg-gradient-to-br from-blue-600 to-indigo-900 min-h-screen flex items-center justify-center p-4">
 
-    <div class="absolute top-0 -left-4 w-72 h-72 bg-blue-600 rounded-full mix-blend-multiply filter blur-3xl opacity-20 animate-blob"></div>
-    <div class="absolute top-0 -right-4 w-72 h-72 bg-cyan-600 rounded-full mix-blend-multiply filter blur-3xl opacity-20 animate-blob animation-delay-2000"></div>
-    <div class="absolute -bottom-8 left-20 w-72 h-72 bg-purple-600 rounded-full mix-blend-multiply filter blur-3xl opacity-20 animate-blob animation-delay-4000"></div>
-
-    <div class="login-card relative bg-white/10 backdrop-blur-xl p-10 rounded-3xl border border-white/20 shadow-2xl w-full max-w-md transform transition-all">
-        
+    <div class="glass max-w-md w-full p-8 rounded-2xl shadow-2xl border border-white/20">
         <div class="text-center mb-8">
-            <div class="inline-flex items-center justify-center w-16 h-16 bg-gradient-to-br from-blue-500 to-cyan-500 rounded-2xl mb-4 shadow-lg shadow-blue-500/30">
-                <span class="text-white text-3xl font-black">K</span>
-            </div>
-            <h1 class="text-3xl font-bold text-white tracking-tight">Welcome Back</h1>
-            <p class="text-slate-400 mt-2">Log in to your Knot account</p>
+            <h1 class="text-4xl font-extrabold text-indigo-900 tracking-tight">KNOT</h1>
+            <p class="text-indigo-600 font-medium">Untangling Campus Chaos</p>
         </div>
 
-        <form id="loginForm" class="space-y-6">
-            <div class="relative">
-                <i class="fas fa-envelope absolute left-4 top-1/2 -translate-y-1/2 text-slate-500"></i>
-                <input type="email" id="email" required placeholder="College Email" 
-                    class="w-full bg-slate-900/50 border border-slate-700 rounded-xl py-3 px-12 text-white placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all">
+        <div id="email-section" class="space-y-4">
+            <div>
+                <label class="block text-sm font-semibold text-gray-700 mb-1">College Email Address</label>
+                <input type="email" id="email" placeholder="name@its.edu.in" 
+                    class="w-full px-4 py-3 rounded-lg border border-gray-300 focus:ring-2 focus:ring-indigo-500 outline-none transition-all">
+                <p class="text-xs text-gray-500 mt-2 italic">*Only verified @its.edu.in emails allowed.</p>
             </div>
-
-            <div class="relative">
-                <i class="fas fa-lock absolute left-4 top-1/2 -translate-y-1/2 text-slate-500"></i>
-                <input type="password" id="password" required placeholder="Password" 
-                    class="w-full bg-slate-900/50 border border-slate-700 rounded-xl py-3 px-12 text-white placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all">
-            </div>
-
-            <div class="flex items-center justify-between text-sm">
-                <label class="flex items-center text-slate-400 cursor-pointer">
-                    <input type="checkbox" class="mr-2 rounded border-slate-700 bg-slate-900 text-blue-500">
-                    Remember me
-                </label>
-                <a href="#" class="text-blue-400 hover:underline">Forgot password?</a>
-            </div>
-
-            <button type="submit" id="loginBtn" class="w-full bg-gradient-to-r from-blue-600 to-cyan-500 text-white font-bold py-3 rounded-xl shadow-lg shadow-blue-600/20 hover:shadow-blue-600/40 hover:scale-[1.02] active:scale-95 transition-all">
-                Sign In
+            <button onclick="sendOTP()" id="send-btn"
+                class="w-full bg-indigo-600 hover:bg-indigo-700 text-white font-bold py-3 rounded-lg transition-colors shadow-lg">
+                Send Secure Code
             </button>
-        </form>
+        </div>
 
-        <p class="text-center text-slate-400 mt-8 text-sm">
-            Don't have an account? <a href="/signup.html" class="text-blue-400 font-bold hover:underline">Create one</a>
-        </p>
+        <div id="otp-section" class="hidden space-y-4">
+            <div>
+                <label class="block text-sm font-semibold text-gray-700 mb-1">Enter 6-Digit OTP</label>
+                <input type="text" id="otp" maxlength="6" placeholder="000000" 
+                    class="w-full px-4 py-3 rounded-lg border border-gray-300 focus:ring-2 focus:ring-indigo-500 outline-none text-center text-2xl tracking-widest">
+                <p id="resend-timer" class="text-xs text-indigo-600 mt-2 text-center cursor-pointer hover:underline">Resend code in 00:59</p>
+            </div>
+            <button onclick="verifyOTP()"
+                class="w-full bg-green-600 hover:bg-green-700 text-white font-bold py-3 rounded-lg transition-colors shadow-lg">
+                Verify & Enter
+            </button>
+            <button onclick="resetFlow()" class="w-full text-sm text-gray-500 hover:text-gray-700">Change Email</button>
+        </div>
+
+        <div id="loader" class="hidden text-center mt-4">
+            <div class="animate-spin rounded-full h-8 w-8 border-b-2 border-indigo-600 mx-auto"></div>
+        </div>
     </div>
 
-    <script src="scripts/scriptlogin.js"></script>
+    <script>
+        const API_BASE = "https://apiknot.niksoriginals.in";
+
+        async function sendOTP() {
+            const email = document.getElementById('email').value;
+            if(!email.endsWith("@its.edu.in")) {
+                alert("Bhai, sirf ITS college ki email allow hai!");
+                return;
+            }
+
+            toggleLoader(true);
+            try {
+                const response = await fetch(`${API_BASE}/auth/send-otp`, {
+                    method: 'POST',
+                    headers: {'Content-Type': 'application/json'},
+                    body: JSON.stringify({ email: email })
+                });
+                const data = await response.json();
+                
+                if(response.ok) {
+                    document.getElementById('email-section').classList.add('hidden');
+                    document.getElementById('otp-section').classList.remove('hidden');
+                } else {
+                    alert(data.error);
+                }
+            } catch (err) {
+                alert("Connection Error!");
+            }
+            toggleLoader(false);
+        }
+
+        async function verifyOTP() {
+            const email = document.getElementById('email').value;
+            const otp = document.getElementById('otp').value;
+
+            try {
+                const response = await fetch(`${API_BASE}/auth/verify-otp`, {
+                    method: 'POST',
+                    headers: {'Content-Type': 'application/json'},
+                    body: JSON.stringify({ email, otp })
+                });
+                
+                if(response.ok) {
+                    window.location.href = "/dashboard"; // Redirect to student dashboard
+                } else {
+                    alert("Invalid OTP! Ek baar check kar lo.");
+                }
+            } catch (err) {
+                alert("Verification Failed!");
+            }
+        }
+
+        function toggleLoader(show) {
+            document.getElementById('loader').classList.toggle('hidden', !show);
+            document.getElementById('send-btn').disabled = show;
+        }
+
+        function resetFlow() {
+            document.getElementById('email-section').classList.remove('hidden');
+            document.getElementById('otp-section').classList.add('hidden');
+        }
+    </script>
 </body>
 </html>
