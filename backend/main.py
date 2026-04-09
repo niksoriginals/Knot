@@ -8,6 +8,16 @@ import os
 import random
 
 app = Flask(__name__)
+CORS(app, 
+     supports_credentials=True, 
+     origins=[
+         "https://knot.niksoriginals.in",
+         "https://admin.knot.niksoriginals.in",
+         "https://info.knot.niksoriginals.in"
+     ],
+     allow_headers=["Content-Type", "Authorization"],
+     methods=["GET", "POST", "OPTIONS"])
+
 
 # --- 1. CONFIGURATION ---
 app.secret_key = os.getenv("FLASK_SECRET", "NISO_SECRET_KEY_2026")
@@ -29,17 +39,13 @@ app.config.update(
 
 mail = Mail(app)
 
-CORS(app, supports_credentials=True, origins=[
-    "https://knot.niksoriginals.in",
-    "https://admin.knot.niksoriginals.in",
-    "https://info.knot.niksoriginals.in"
-])
 
-DB_PATH = "/data/knot.db"
+
 ADMIN_USER = "admin"
 ADMIN_PASS_HASH = "admin" 
 
-# --- 2. DATABASE HELPERS ---
+DB_PATH = "/data/nofy.db"
+
 def get_db():
     conn = sqlite3.connect(DB_PATH, timeout=20)
     conn.execute('PRAGMA journal_mode=WAL;')
@@ -78,8 +84,6 @@ def init_db():
     conn.commit()
     conn.close()
 
-init_db()
-
 # --- 3. SECURITY DECORATORS ---
 def admin_required(f):
     @wraps(f)
@@ -96,31 +100,52 @@ def home():
 
 @app.route("/auth/send-otp", methods=["POST"])
 def send_otp():
+    print(f"--- [LOG START] send_otp for: {request.json.get('email')} ---")
+    
     data = request.json or {}
     email = data.get("email")
     
     if not email or not email.endswith("@its.edu.in"):
+        print(f"!!! [ERROR] Invalid Email Domain: {email}")
         return jsonify({"error": "Chup"}), 400
 
     otp = str(random.randint(100000, 999999))
     expiry = (datetime.now() + timedelta(minutes=5)).strftime('%Y-%m-%d %H:%M:%S')
 
-    conn = get_db()
-    conn.execute("INSERT OR REPLACE INTO otps (email, otp_code, expiry) VALUES (?, ?, ?)", 
-                 (email, otp, expiry))
-    conn.commit()
-    conn.close()
+    try:
+        print(">>> [STEP 1] Connecting to Database...")
+        conn = get_db()
+        
+        print(">>> [STEP 2] Inserting OTP into DB...")
+        conn.execute("INSERT OR REPLACE INTO otps (email, otp_code, expiry) VALUES (?, ?, ?)", 
+                     (email, otp, expiry))
+        conn.commit()
+        conn.close()
+        print("<<< [SUCCESS] DB Updated.")
+        
+    except Exception as db_e:
+        print(f"!!! [DB ERROR] {str(db_e)}")
+        return jsonify({"error": "Database error", "details": str(db_e)}), 500
 
     try:
+        print(f">>> [STEP 3] Sending Email via {app.config['MAIL_SERVER']}...")
         msg = Message('KNOT - Your Secure Login Code', 
                       sender=app.config['MAIL_USERNAME'], 
                       recipients=[email])
         msg.body = f"Your OTP for KNOT Login is: {otp}. It will expire in 5 minutes."
-        mail.send(msg)
+        
+        # Ye line 524 timeout ka sabse bada reason ho sakti hai
+        mail.send(msg) 
+        
+        print("<<< [SUCCESS] Email Sent.")
         return jsonify({"success": True, "message": "OTP sent successfully"})
     
     except Exception as e:
+        print(f"!!! [MAIL ERROR] {str(e)}")
         return jsonify({"error": "Failed to send email", "details": str(e)}), 500
+    
+    finally:
+        print("--- [LOG END] ---")
 
 @app.route("/auth/verify-otp", methods=["POST"])
 def verify_otp():
