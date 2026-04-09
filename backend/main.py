@@ -27,8 +27,8 @@ app.config.update(
     MAIL_SERVER='smtp.gmail.com',
     MAIL_PORT=587,
     MAIL_USE_TLS=True,
-    MAIL_USERNAME=os.getenv("MAIL_USER", "niksoriginals@gmail.com"), 
-    MAIL_PASSWORD=os.getenv("MAIL_PASS", ""), 
+    MAIL_USERNAME="niksoriginals@gmail.com", 
+    MAIL_PASSWORD="yxdc afft mfzg wzrz", 
     
     # Session Settings
     SESSION_COOKIE_HTTPONLY=True,
@@ -135,7 +135,7 @@ def send_otp():
                       recipients=[email])
         msg.body = f"Your OTP for KNOT Login is: {otp}. It will expire in 5 minutes."
         
-        # Ye line 524 timeout ka sabse bada reason ho sakti hai
+        print("Trying to send.")
         mail.send(msg) 
         
         print("<<< [SUCCESS] Email Sent.")
