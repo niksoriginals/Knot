@@ -96,6 +96,7 @@ def admin_required(f):
 # --- 4. AUTH ROUTES (OTP & ADMIN) ---
 @app.route("/")
 def home():
+    init_db()
     return "✅ Knot is Running"
 
 @app.route("/auth/send-otp", methods=["POST"])
