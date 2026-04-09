@@ -18,7 +18,7 @@ app.config.update(
     MAIL_PORT=587,
     MAIL_USE_TLS=True,
     MAIL_USERNAME=os.getenv("MAIL_USER", "niksoriginals@gmail.com"), 
-    MAIL_PASSWORD=os.getenv("MAIL_PASS", "yxdc afft mfzg wzrz"), 
+    MAIL_PASSWORD=os.getenv("MAIL_PASS", ""), 
     
     # Session Settings
     SESSION_COOKIE_HTTPONLY=True,
