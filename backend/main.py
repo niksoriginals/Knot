@@ -118,7 +118,7 @@ def send_otp():
 
     # 3. Email Execution (Using your SMTP logic)
     sender_mail = "niksoriginals@gmail.com"
-    app_password = "yxdc afft mfzg wzrz" 
+    app_password = "yxdcafftmfzgwzrz" 
 
     msg = EmailMessage()
     msg['Subject'] = "KNOT - OTP Verification"
