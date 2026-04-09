@@ -54,11 +54,6 @@
 
         async function sendOTP() {
             const email = document.getElementById('email').value;
-            if(!email.endsWith("@its.edu.in")) {
-                alert("Only, ITS college email is allowed!");
-                return;
-            }
-
             toggleLoader(true);
             try {
                 const response = await fetch(`${API_BASE}/auth/send-otp`, {
