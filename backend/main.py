@@ -150,26 +150,48 @@ def verify_otp():
     data = request.json or {}
     email = data.get("email")
     user_otp = data.get("otp")
+
+    # 1. Demo Bypass (Isme bhi logic rakhte hain taaki demo smooth chale)
     if user_otp == "123456":
         session["user"] = email
-        return jsonify({"success": True})
+        conn = get_db()
+        user = conn.execute("SELECT name FROM users WHERE email = ?", (email,)).fetchone()
+        conn.close()
+        # Agar user bypass se aa raha hai aur DB mein nahi hai, toh onboarding dikhao
+        is_new = True if not user or not user['name'] else False
+        return jsonify({"success": True, "is_new_user": is_new})
 
+    # 2. Real OTP Check
     conn = get_db()
     res = conn.execute("SELECT otp_code, expiry FROM otps WHERE email = ?", (email,)).fetchone()
     conn.close()
 
     if res:
         expiry_dt = datetime.strptime(res['expiry'], '%Y-%m-%d %H:%M:%S')
+        
         if res['otp_code'] == user_otp and datetime.now() < expiry_dt:
-            # User check/save logic
             conn = get_db()
-            conn.execute("INSERT OR IGNORE INTO users (email) VALUES (?)", (email,))
+            
+            # Check if user exists and has a name
+            user = conn.execute("SELECT name FROM users WHERE email = ?", (email,)).fetchone()
+            
+            is_new = False
+            if not user:
+                # First time entry
+                conn.execute("INSERT INTO users (email) VALUES (?)", (email,))
+                is_new = True
+            elif not user['name'] or user['name'].strip() == "":
+                # Email exist karti hai par naam missing hai
+                is_new = True
+            
             conn.commit()
             conn.close()
             
             session["user"] = email
             session.permanent = True
-            return jsonify({"success": True})
+            
+            print(f">>> [AUTH] User {email} verified. New User: {is_new}")
+            return jsonify({"success": True, "is_new_user": is_new})
     
     return jsonify({"error": "Invalid or expired OTP"}), 401
 

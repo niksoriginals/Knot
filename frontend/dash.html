@@ -1,0 +1,182 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>KNOT Dashboard | Campus Hub</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;700;800&display=swap');
+        body { font-family: 'Plus Jakarta Sans', sans-serif; background-color: #020617; color: white; }
+        
+        .glass-panel {
+            background: rgba(15, 23, 42, 0.6);
+            backdrop-filter: blur(20px);
+            border: 1px solid rgba(255, 255, 255, 0.05);
+            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+        .glass-panel:hover {
+            border-color: #3b82f6;
+            background: rgba(15, 23, 42, 0.8);
+            transform: translateY(-4px);
+        }
+        .brand-gradient {
+            background: linear-gradient(135deg, #3b82f6 0%, #06b6d4 100%);
+        }
+        .shimmer {
+            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.05), transparent);
+            background-size: 200% 100%;
+            animation: shimmer 2s infinite;
+        }
+        @keyframes shimmer { 0% { background-position: -200% 0; } 100% { background-position: 200% 0; } }
+    </style>
+</head>
+<body class="min-h-screen">
+
+    <nav class="sticky top-0 z-50 bg-slate-950/80 backdrop-blur-md border-b border-white/5 px-6 py-4">
+        <div class="max-w-7xl mx-auto flex justify-between items-center">
+            <div class="flex items-center gap-3">
+                <div class="brand-gradient w-9 h-9 rounded-xl flex items-center justify-center shadow-lg shadow-blue-500/20">
+                    <i class="fas fa-knot text-white"></i>
+                </div>
+                <span class="text-2xl font-black tracking-tighter">KNOT<span class="text-blue-500">.</span></span>
+            </div>
+            
+            <div class="flex items-center gap-6">
+                <div class="text-right hidden sm:block">
+                    <p class="text-[10px] text-slate-500 font-bold uppercase tracking-[0.2em]">Authorized User</p>
+                    <p id="userName" class="text-sm font-bold text-slate-200 animate-pulse">Loading Profile...</p>
+                </div>
+                <div class="w-10 h-10 rounded-full bg-slate-800 border border-slate-700 flex items-center justify-center">
+                    <i class="fas fa-user-circle text-slate-400"></i>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <main class="max-w-7xl mx-auto px-6 py-12">
+        <header class="mb-12">
+            <h1 class="text-4xl md:text-6xl font-extrabold mb-4 tracking-tight">
+                Welcome back, <span class="bg-gradient-to-r from-blue-400 to-cyan-400 bg-clip-text text-transparent" id="greetName">User</span>!
+            </h1>
+            <p class="text-slate-500 text-lg font-medium">ITS Engineering College • Connected Campus Ecosystem</p>
+        </header>
+
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+            
+            <div class="glass-panel p-8 rounded-[40px] relative overflow-hidden group">
+                <div class="relative z-10">
+                    <div class="w-14 h-14 bg-blue-500/10 text-blue-500 rounded-2xl flex items-center justify-center mb-6 border border-blue-500/20">
+                        <i class="fas fa-calendar-alt text-2xl"></i>
+                    </div>
+                    <h3 class="text-2xl font-bold mb-3">Resource Hub</h3>
+                    <p class="text-slate-500 text-sm leading-relaxed mb-8">Live lab status, seminar hall bookings, and instant QR-based lookup.</p>
+                    <a href="/resources" class="inline-flex items-center gap-2 text-blue-400 font-bold hover:text-blue-300 transition-colors">
+                        Enter Hub <i class="fas fa-arrow-right group-hover:translate-x-2 transition-transform"></i>
+                    </a>
+                </div>
+            </div>
+
+            <div class="glass-panel p-8 rounded-[40px] relative overflow-hidden group">
+                <div class="relative z-10">
+                    <div class="w-14 h-14 bg-cyan-500/10 text-cyan-500 rounded-2xl flex items-center justify-center mb-6 border border-cyan-500/20">
+                        <i class="fas fa-shop text-2xl"></i>
+                    </div>
+                    <h3 class="text-2xl font-bold mb-3">Marketplace</h3>
+                    <p class="text-slate-500 text-sm leading-relaxed mb-8">The secure internal campus economy for books, gadgets, and services.</p>
+                    <a href="/marketplace" class="inline-flex items-center gap-2 text-cyan-400 font-bold hover:text-cyan-300 transition-colors">
+                        Start Trading <i class="fas fa-arrow-right group-hover:translate-x-2 transition-transform"></i>
+                    </a>
+                </div>
+            </div>
+
+            <div class="glass-panel p-8 rounded-[40px] relative overflow-hidden group">
+                <div class="relative z-10">
+                    <div class="w-14 h-14 bg-rose-500/10 text-rose-500 rounded-2xl flex items-center justify-center mb-6 border border-rose-500/20">
+                        <i class="fas fa-box-open text-2xl"></i>
+                    </div>
+                    <h3 class="text-2xl font-bold mb-3">Lost & Found</h3>
+                    <p class="text-slate-500 text-sm leading-relaxed mb-8">Report misplaced belongings and reunite with lost items within campus.</p>
+                    <a href="/lost-found" class="inline-flex items-center gap-2 text-rose-400 font-bold hover:text-rose-300 transition-colors">
+                        Report Item <i class="fas fa-arrow-right group-hover:translate-x-2 transition-transform"></i>
+                    </a>
+                </div>
+            </div>
+
+        </div>
+
+        <div class="mt-12 grid grid-cols-1 lg:grid-cols-3 gap-8">
+            <div class="lg:col-span-2 glass-panel rounded-[40px] p-8">
+                <h4 class="text-xl font-bold mb-6 flex items-center gap-3">
+                    <span class="w-2 h-2 bg-green-500 rounded-full animate-ping"></span>
+                    Live Campus Status
+                </h4>
+                <div class="space-y-4" id="liveStatusList">
+                    <div class="shimmer h-16 w-full rounded-2xl"></div>
+                    <div class="shimmer h-16 w-full rounded-2xl"></div>
+                </div>
+            </div>
+
+            <div class="glass-panel rounded-[40px] p-8">
+                <h4 class="text-xl font-bold mb-6">Profile Snapshot</h4>
+                <div class="space-y-4">
+                    <div class="bg-slate-900/50 p-4 rounded-2xl border border-white/5">
+                        <p class="text-[10px] text-slate-500 uppercase font-bold tracking-widest mb-1">Your Email</p>
+                        <p id="userEmail" class="text-sm font-semibold text-slate-300">nikhil@its.edu.in</p>
+                    </div>
+                    <div class="bg-slate-900/50 p-4 rounded-2xl border border-white/5">
+                        <p class="text-[10px] text-slate-500 uppercase font-bold tracking-widest mb-1">Affiliation</p>
+                        <p class="text-sm font-semibold text-slate-300">ITS Engineering College</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <script>
+        const API_BASE = "https://apiknot.niksoriginals.in";
+
+        // Real Backend Integration
+        async function fetchDashboardData() {
+            try {
+                // In production, you'd fetch the actual logged-in user profile
+                // For now, let's extract name from session/email
+                document.getElementById('userName').innerText = "Nikhil Yadav";
+                document.getElementById('greetName').innerText = "Nikhil";
+                document.getElementById('userName').classList.remove('animate-pulse');
+
+                // Simulate fetching live status for a key resource (ID 1 as example)
+                const res = await fetch(`${API_BASE}/api/resource-status/1`);
+                const result = await res.json();
+                
+                const statusHtml = `
+                    <div class="flex items-center justify-between p-4 bg-slate-900/40 rounded-2xl border border-white/5">
+                        <div class="flex items-center gap-4">
+                            <div class="w-10 h-10 brand-gradient rounded-xl flex items-center justify-center">
+                                <i class="fas fa-desktop"></i>
+                            </div>
+                            <div>
+                                <p class="font-bold">${result.data.name || 'Primary Lab'}</p>
+                                <p class="text-xs text-slate-500">${result.data.type || 'Laboratory'}</p>
+                            </div>
+                        </div>
+                        <div class="text-right">
+                            <span class="px-3 py-1 rounded-full text-[10px] font-bold ${result.data.status === 'Available' ? 'bg-green-500/10 text-green-500' : 'bg-rose-500/10 text-rose-500'}">
+                                ${result.data.status.toUpperCase()}
+                            </span>
+                        </div>
+                    </div>
+                `;
+                document.getElementById('liveStatusList').innerHTML = statusHtml;
+
+            } catch (err) {
+                console.error("Dashboard Sync Error:", err);
+                document.getElementById('liveStatusList').innerHTML = '<p class="text-slate-600 italic">Syncing live data...</p>';
+            }
+        }
+
+        window.onload = fetchDashboardData;
+    </script>
+</body>
+</html>
