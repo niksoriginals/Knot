@@ -467,7 +467,55 @@ def admin_delete_market(item_id):
     conn.execute("DELETE FROM marketplace WHERE id = ?", (item_id,))
     conn.commit()
     conn.close()
-    return jsonify({"success": True, "message": "Ad removed by admin"})   
+    return jsonify({"success": True, "message": "Ad removed by admin"})
+
+
+# --- MARKETPLACE: FETCH (Filtered for Lost/Found) ---
+@app.route("/api/marketplace", methods=["GET"])
+def get_marketplace():
+    category = request.args.get("category")
+    try:
+        with get_db() as conn:
+            # Join users to get poster name
+            query = '''
+                SELECT m.*, u.name as owner_name 
+                FROM marketplace m 
+                JOIN users u ON m.user_id = u.id
+            '''
+            # Agar hum lost-found page par hain, toh Sell/Trade ko hide kar do
+            if category == 'lostfound':
+                query += " WHERE m.type IN ('Lost', 'Found')"
+            
+            query += " ORDER BY m.id DESC"
+            items = conn.execute(query).fetchall()
+            return jsonify([dict(i) for i in items])
+    except Exception as e:
+        return jsonify({"error": str(e)}), 500
+
+# --- MARKETPLACE: POST NEW ITEM ---
+@app.route("/api/marketplace/add", methods=["POST"])
+def add_marketplace_item():
+    email = session.get("user")
+    if not email: return jsonify({"error": "Unauthorized"}), 401
+    
+    data = request.json
+    title = data.get("title")
+    description = data.get("description")
+    m_type = data.get("type") # 'Lost', 'Found', 'Sell', etc.
+
+    try:
+        with get_db() as conn:
+            user = conn.execute("SELECT id FROM users WHERE email = ?", (email,)).fetchone()
+            if not user: return jsonify({"error": "User not found"}), 404
+            
+            conn.execute('''
+                INSERT INTO marketplace (user_id, title, description, type)
+                VALUES (?, ?, ?, ?)
+            ''', (user['id'], title, description, m_type))
+            conn.commit()
+        return jsonify({"success": True})
+    except Exception as e:
+        return jsonify({"error": str(e)}), 500
 
 # --- RESOURCE API: FETCH ALL ---
 
