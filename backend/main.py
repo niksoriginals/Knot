@@ -529,6 +529,74 @@ def admin_booking_action():
             return jsonify({"success": True, "message": msg})
     except Exception as e:
         return jsonify({"error": str(e)}), 500
+    
+# --- 1. SMART STATUS CHECK (Auto-Expiry Logic) ---
+@app.route("/api/resource-status/<int:res_id>", methods=["GET"])
+def check_status(res_id):
+    conn = get_db()
+    try:
+        # Check current resource
+        resource = conn.execute("SELECT * FROM resources WHERE id = ?", (res_id,)).fetchone()
+        if not resource: return jsonify({"error": "Node not found"}), 404
+
+        # AUTO-RELEASE LOGIC:
+        # Agar status Occupied hai, toh check karo ki latest confirmed booking kab khatam ho rahi hai
+        if resource['status'] == 'Occupied':
+            latest_booking = conn.execute('''
+                SELECT end_time FROM bookings 
+                WHERE resource_id = ? AND status = 'Confirmed' 
+                ORDER BY end_time DESC LIMIT 1
+            ''', (res_id,)).fetchone()
+
+            if latest_booking:
+                # String comparison works with ISO format (YYYY-MM-DDTHH:MM)
+                now = datetime.now().strftime('%Y-%m-%dT%H:%M')
+                if now > latest_booking['end_time']:
+                    # Time has passed! Auto-release the node
+                    conn.execute("UPDATE resources SET status = 'Available' WHERE id = ?", (res_id,))
+                    conn.commit()
+                    print(f">>> [AUTO-RELEASE] Node {res_id} is now Available.")
+                    # Re-fetch resource state
+                    resource = conn.execute("SELECT * FROM resources WHERE id = ?", (res_id,)).fetchone()
+
+        data = {
+            "name": resource['name'],
+            "type": resource['type'],
+            "status": resource['status'],
+            "occupied_by": None,
+            "ends_at": None
+        }
+
+        if resource['status'] != 'Available':
+            booking_info = conn.execute('''
+                SELECT u.name, b.end_time 
+                FROM bookings b
+                JOIN users u ON b.user_id = u.id
+                WHERE b.resource_id = ? AND b.status = 'Confirmed'
+                ORDER BY b.start_time DESC LIMIT 1
+            ''', (res_id,)).fetchone()
+
+            if booking_info:
+                data["occupied_by"] = booking_info['name']
+                data["ends_at"] = booking_info['end_time']
+
+        conn.close()
+        return jsonify({"success": True, "data": data})
+
+    except Exception as e:
+        return jsonify({"error": str(e)}), 500
+
+# --- 2. MANUAL RELEASE (For Admin Panel) ---
+@app.route("/admin/resources/release/<int:res_id>", methods=["POST"])
+@admin_required
+def manual_release(res_id):
+    try:
+        with get_db() as conn:
+            conn.execute("UPDATE resources SET status = 'Available' WHERE id = ?", (res_id,))
+            conn.commit()
+        return jsonify({"success": True, "message": "Node Protocol Reset: Status AVAILABLE"})
+    except Exception as e:
+        return jsonify({"error": str(e)}), 500
 
 #------------------------------------------------------------------------------------
 #Main Backend
