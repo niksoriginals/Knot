@@ -1,0 +1,262 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>KNOT | System Administration</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;700;800&display=swap');
+        body { font-family: 'Plus Jakarta Sans', sans-serif; background: #020617; color: #f8fafc; }
+        .sidebar-item.active { background: rgba(59, 130, 246, 0.1); border-right: 4px solid #3b82f6; color: #3b82f6; }
+        .admin-card { background: rgba(15, 23, 42, 0.6); border: 1px solid rgba(255, 255, 255, 0.05); }
+    </style>
+</head>
+<body class="min-h-screen flex">
+
+    <aside class="w-64 border-r border-white/5 bg-slate-950 flex flex-col">
+        <div class="p-6 border-b border-white/5">
+            <span class="text-xl font-black italic tracking-tighter">KNOT <span class="text-blue-500">ADMIN</span></span>
+        </div>
+        <nav class="flex-1 p-4 space-y-2">
+            <button onclick="showTab('analytics')" class="sidebar-item w-full flex items-center gap-3 p-3 rounded-lg text-sm font-bold active">
+                <i class="fas fa-chart-line"></i> Analytics
+            </button>
+            <button onclick="showTab('users')" class="sidebar-item w-full flex items-center gap-3 p-3 rounded-lg text-sm font-bold">
+                <i class="fas fa-users-cog"></i> Manage Users
+            </button>
+            <button onclick="showTab('resources')" class="sidebar-item w-full flex items-center gap-3 p-3 rounded-lg text-sm font-bold">
+                <i class="fas fa-microchip"></i> Resources
+            </button>
+            <button onclick="showTab('marketplace')" class="sidebar-item w-full flex items-center gap-3 p-3 rounded-lg text-sm font-bold">
+                <i class="fas fa-store"></i> Marketplace
+            </button>
+        </nav>
+        <div class="p-6 border-t border-white/5">
+            <button onclick="location.href='/dashboard'" class="text-xs text-slate-500 hover:text-white transition-colors">
+                <i class="fas fa-arrow-left mr-2"></i> Exit Admin
+            </button>
+        </div>
+    </aside>
+
+    <main class="flex-1 overflow-y-auto p-10">
+        
+        <section id="tab-analytics" class="tab-content space-y-10">
+            <h2 class="text-3xl font-black">Ecosystem Analytics</h2>
+            <div class="grid grid-cols-4 gap-6" id="stats-grid">
+                <div class="admin-card p-6 rounded-2xl"><p class="text-xs text-slate-500 font-bold uppercase">Total Users</p><p id="count-users" class="text-3xl font-black mt-2">0</p></div>
+                <div class="admin-card p-6 rounded-2xl"><p class="text-xs text-slate-500 font-bold uppercase">Confirmed Bookings</p><p id="count-bookings" class="text-3xl font-black mt-2 text-blue-500">0</p></div>
+                <div class="admin-card p-6 rounded-2xl"><p class="text-xs text-slate-500 font-bold uppercase">Resource Load</p><p id="count-resources" class="text-3xl font-black mt-2">0</p></div>
+                <div class="admin-card p-6 rounded-2xl"><p class="text-xs text-slate-500 font-bold uppercase">Market Ads</p><p id="count-market" class="text-3xl font-black mt-2 text-emerald-500">0</p></div>
+            </div>
+            
+            <div class="admin-card p-8 rounded-3xl">
+                <h3 class="text-sm font-black uppercase tracking-widest text-slate-500 mb-6">Real-Time Resource Usage Frequency</h3>
+                <div id="usage-chart" class="space-y-4">
+                    </div>
+            </div>
+        </section>
+
+        <section id="tab-users" class="tab-content hidden space-y-6">
+            <div class="flex justify-between items-center">
+                <h2 class="text-3xl font-black">User Authority Control</h2>
+                <div class="relative w-72">
+                    <i class="fas fa-search absolute left-4 top-1/2 -translate-y-1/2 text-slate-500"></i>
+                    <input type="text" id="user-search" onkeyup="searchUsers()" placeholder="Search Name or Email..." 
+                        class="w-full bg-slate-900 border border-white/10 rounded-xl py-2 pl-12 pr-4 outline-none focus:border-blue-500 transition-all">
+                </div>
+            </div>
+            <div class="admin-card rounded-2xl overflow-hidden">
+                <table class="w-full text-left text-sm">
+                    <thead class="bg-slate-900 text-slate-500 uppercase text-[10px] font-black tracking-widest">
+                        <tr>
+                            <th class="p-4">User Details</th>
+                            <th class="p-4">Department</th>
+                            <th class="p-4">Current Role</th>
+                            <th class="p-4 text-right">Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody id="user-table-body">
+                        </tbody>
+                </table>
+            </div>
+        </section>
+
+        <section id="tab-resources" class="tab-content hidden space-y-6">
+            <div class="flex justify-between items-center">
+                <h2 class="text-3xl font-black">Facility Management</h2>
+                <button onclick="toggleAddModal(true)" class="bg-blue-600 hover:bg-blue-500 text-white font-bold py-2 px-6 rounded-xl text-sm transition-all">
+                    + Add New Resource
+                </button>
+            </div>
+            <div id="resource-list" class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                </div>
+        </section>
+
+        <section id="tab-marketplace" class="tab-content hidden space-y-6">
+            <h2 class="text-3xl font-black">Marketplace Moderation</h2>
+            <div id="market-list" class="grid grid-cols-1 gap-3">
+                </div>
+        </section>
+
+    </main>
+
+    <div id="add-modal" class="fixed inset-0 bg-black/80 backdrop-blur-sm hidden flex items-center justify-center z-50">
+        <div class="bg-slate-900 border border-white/10 p-8 rounded-3xl w-full max-w-md">
+            <h3 class="text-xl font-bold mb-6">Provision New Resource</h3>
+            <div class="space-y-4">
+                <input type="text" id="res-name" placeholder="Resource Name (Ex: Lab B2)" class="w-full bg-slate-800 border border-white/5 rounded-xl p-3 outline-none focus:border-blue-500">
+                <select id="res-type" class="w-full bg-slate-800 border border-white/5 rounded-xl p-3 outline-none">
+                    <option value="Lab">Laboratory</option>
+                    <option value="Hall">Seminar Hall</option>
+                    <option value="Studio">Studio/Project Room</option>
+                </select>
+                <div class="flex items-center gap-3 p-3">
+                    <input type="checkbox" id="res-approval" class="w-4 h-4 rounded">
+                    <label class="text-sm font-medium text-slate-400">Requires Admin Approval</label>
+                </div>
+            </div>
+            <div class="flex gap-3 mt-8">
+                <button onclick="toggleAddModal(false)" class="flex-1 py-3 text-slate-500 font-bold">Cancel</button>
+                <button onclick="saveResource()" class="flex-1 bg-blue-600 py-3 rounded-xl font-bold hover:bg-blue-500 transition-all">Create Node</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const API_BASE = "https://apiknot.niksoriginals.in";
+
+        // Tab Management
+        function showTab(tabId) {
+            document.querySelectorAll('.tab-content').forEach(el => el.classList.add('hidden'));
+            document.getElementById(`tab-${tabId}`).classList.remove('hidden');
+            document.querySelectorAll('.sidebar-item').forEach(el => el.classList.remove('active'));
+            event.currentTarget.classList.add('active');
+            
+            // Load specific tab data
+            if(tabId === 'analytics') loadAnalytics();
+            if(tabId === 'users') searchUsers();
+            if(tabId === 'resources') loadResources();
+            if(tabId === 'marketplace') loadMarketplace();
+        }
+
+        // --- 1. ANALYTICS ---
+        async function loadAnalytics() {
+            const res = await fetch(`${API_BASE}/api/admin/stats`, { credentials: 'include' });
+            const data = await res.json();
+            
+            document.getElementById('count-users').innerText = data.counts.users;
+            document.getElementById('count-bookings').innerText = data.counts.bookings;
+            document.getElementById('count-resources').innerText = data.counts.resources;
+            document.getElementById('count-market').innerText = data.counts.market;
+
+            const chart = document.getElementById('usage-chart');
+            chart.innerHTML = data.usage.map(row => `
+                <div class="space-y-1">
+                    <div class="flex justify-between text-[10px] font-black uppercase text-slate-400">
+                        <span>${row.name}</span><span>${row.use_count} Bookings</span>
+                    </div>
+                    <div class="w-full bg-slate-900 h-2 rounded-full overflow-hidden">
+                        <div class="bg-blue-600 h-full" style="width: ${Math.min(row.use_count * 10, 100)}%"></div>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        // --- 2. USER SEARCH & ROLE UPDATE ---
+        async function searchUsers() {
+            const q = document.getElementById('user-search').value;
+            const res = await fetch(`${API_BASE}/admin/users/search?q=${q}`, { credentials: 'include' });
+            const users = await res.json();
+            
+            const tbody = document.getElementById('user-table-body');
+            tbody.innerHTML = users.map(user => `
+                <tr class="border-b border-white/5 hover:bg-white/[0.02] transition-colors">
+                    <td class="p-4">
+                        <div class="font-bold text-white">${user.name || 'Set Name'}</div>
+                        <div class="text-[10px] text-slate-500">${user.email}</div>
+                    </td>
+                    <td class="p-4 text-slate-400 font-medium italic">${user.department || 'ITS'}</td>
+                    <td class="p-4 uppercase text-[10px] font-black text-blue-400">${user.role}</td>
+                    <td class="p-4 text-right">
+                        <select onchange="updateRole(${user.id}, this.value)" class="bg-slate-900 border border-white/10 rounded-lg text-xs p-1 outline-none">
+                            <option value="student" ${user.role==='student'?'selected':''}>Student</option>
+                            <option value="admin" ${user.role==='admin'?'selected':''}>Admin</option>
+                            <option value="hod" ${user.role==='hod'?'selected':''}>HOD</option>
+                            <option value="dean" ${user.role==='dean'?'selected':''}>Dean</option>
+                        </select>
+                    </td>
+                </tr>
+            `).join('');
+        }
+
+        async function updateRole(userId, role) {
+            await fetch(`${API_BASE}/admin/users/update-role`, {
+                method: 'POST',
+                headers: {'Content-Type': 'application/json'},
+                credentials: 'include',
+                body: JSON.stringify({ user_id: userId, role: role })
+            });
+            alert("Authority Updated!");
+        }
+
+        // --- 3. RESOURCE CRUD ---
+        async function loadResources() {
+            const res = await fetch(`${API_BASE}/admin/resources`, { credentials: 'include' });
+            const data = await res.json();
+            document.getElementById('resource-list').innerHTML = data.map(r => `
+                <div class="admin-card p-6 rounded-2xl flex justify-between items-center">
+                    <div><p class="font-bold text-white">${r.name}</p><p class="text-[10px] text-slate-500 uppercase">${r.type}</p></div>
+                    <button onclick="deleteResource(${r.id})" class="text-rose-500 hover:bg-rose-500/10 p-2 rounded-lg transition-all"><i class="fas fa-trash-alt"></i></button>
+                </div>
+            `).join('');
+        }
+
+        function toggleAddModal(show) { document.getElementById('add-modal').classList.toggle('hidden', !show); }
+
+        async function saveResource() {
+            const name = document.getElementById('res-name').value;
+            const type = document.getElementById('res-type').value;
+            const appr = document.getElementById('res-approval').checked ? 1 : 0;
+            
+            const res = await fetch(`${API_BASE}/admin/resources/add`, {
+                method: 'POST',
+                headers: {'Content-Type': 'application/json'},
+                credentials: 'include',
+                body: JSON.stringify({ name, type, needs_approval: appr })
+            });
+            if(res.ok) { toggleAddModal(false); loadResources(); }
+        }
+
+        async function deleteResource(id) {
+            if(!confirm("Destroy this resource node?")) return;
+            await fetch(`${API_BASE}/admin/resources/delete/${id}`, { method: 'DELETE', credentials: 'include' });
+            loadResources();
+        }
+
+        // --- 4. MARKETPLACE MODERATION ---
+        async function loadMarketplace() {
+            const res = await fetch(`${API_BASE}/admin/marketplace/items`, { credentials: 'include' });
+            const items = await res.json();
+            document.getElementById('market-list').innerHTML = items.map(i => `
+                <div class="admin-card p-4 rounded-xl flex justify-between items-center">
+                    <div class="flex items-center gap-4">
+                        <div class="w-10 h-10 bg-slate-900 rounded flex items-center justify-center font-bold text-slate-500">${i.type[0]}</div>
+                        <div><p class="text-sm font-bold text-white">${i.title}</p><p class="text-[10px] text-slate-500">By ${i.owner_name}</p></div>
+                    </div>
+                    <button onclick="deleteMarketItem(${i.id})" class="bg-rose-500/10 text-rose-500 text-[10px] font-black uppercase px-4 py-2 rounded-lg hover:bg-rose-500 hover:text-white transition-all">Purge Ad</button>
+                </div>
+            `).join('');
+        }
+
+        async function deleteMarketItem(id) {
+            if(!confirm("Remove this ad permanently?")) return;
+            await fetch(`${API_BASE}/admin/marketplace/delete/${id}`, { method: 'DELETE', credentials: 'include' });
+            loadMarketplace();
+        }
+
+        window.onload = () => showTab('analytics');
+    </script>
+</body>
+</html>
