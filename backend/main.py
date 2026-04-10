@@ -477,26 +477,39 @@ def get_all_resources():
         now = datetime.now().strftime('%Y-%m-%dT%H:%M')
         
         with get_db() as conn:
+            # 1. Auto-Release Logic (Same as before)
             occupied_nodes = conn.execute("SELECT id FROM resources WHERE status = 'Occupied'").fetchall()
-            
             for node in occupied_nodes:
                 res_id = node['id']
-                latest_booking = conn.execute('''
-                    SELECT end_time FROM bookings 
-                    WHERE resource_id = ? AND status = 'Confirmed' 
+                latest = conn.execute('''
+                    SELECT end_time FROM bookings WHERE resource_id = ? AND status = 'Confirmed' 
                     ORDER BY end_time DESC LIMIT 1
                 ''', (res_id,)).fetchone()
-
-                if latest_booking and now > latest_booking['end_time']:
+                if latest and now > latest['end_time']:
                     conn.execute("UPDATE resources SET status = 'Available' WHERE id = ?", (res_id,))
-                    print(f">>> [AUTO-RELEASE] Node {res_id} expired and set to Available.")
-            
             conn.commit()
             resources = conn.execute("SELECT * FROM resources").fetchall()
-            return jsonify([dict(r) for r in resources])
+            result = []
+            
+            for r in resources:
+                res_dict = dict(r)
+                res_dict['busy_until'] = None #
+                
+                if r['status'] == 'Occupied':
+                    # Booking se end_time uthao
+                    booking = conn.execute('''
+                        SELECT end_time FROM bookings 
+                        WHERE resource_id = ? AND status = 'Confirmed' 
+                        ORDER BY end_time DESC LIMIT 1
+                    ''', (r['id'],)).fetchone()
+                    if booking:
+                        res_dict['busy_until'] = booking['end_time']
+                
+                result.append(res_dict)
+                
+            return jsonify(result)
             
     except Exception as e:
-        print(f"!!! [LIST ERROR] {e}")
         return jsonify({"error": str(e)}), 500
 
 # --- RESOURCE API: BOOKING ---
