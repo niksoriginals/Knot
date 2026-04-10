@@ -207,6 +207,7 @@
                             <option value="IT">Information Tech</option>
                             <option value="ECE">Electronics</option>
                             <option value="ME">Mechanical</option>
+                            <option value="None">Mechanical</option>
                         </select>
                     </div>
                     <button onclick="updateProfile()" id="btn-finish"
@@ -292,7 +293,7 @@
                         const profRes = await fetch(`${API_BASE}/api/user-profile`, { credentials: 'include' });
                         const profData = await profRes.json();
 
-                        let targetUrl = "/dashboard"; // Default
+                        let targetUrl = "/dashboard"; 
                         const role = profData.role.toLowerCase();
 
                         if (role === 'admin') targetUrl = "/admin";
