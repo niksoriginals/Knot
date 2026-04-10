@@ -136,12 +136,8 @@
 
     <script>
         const API_BASE = "https://apiknot.niksoriginals.in";
-
-        // Real Backend Integration
         async function fetchDashboardData() {
             try {
-                // In production, you'd fetch the actual logged-in user profile
-                // For now, let's extract name from session/email
                 document.getElementById('userName').innerText = "Nikhil Yadav";
                 document.getElementById('greetName').innerText = "Nikhil";
                 document.getElementById('userName').classList.remove('animate-pulse');
