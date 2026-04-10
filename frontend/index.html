@@ -1,197 +1,620 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Knot | Campus Hub</title>
+    <title>KNOT | Enterprise Node OS - Architecture Hub</title>
+
+    <!-- Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Font Awesome -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
     <style>
-        @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;600;800&display=swap');
-        body { font-family: 'Plus Jakarta Sans', sans-serif; scroll-behavior: smooth; }
-        
-        /* Premium Background Animation */
-        .mesh-bg {
-            background-color: #ffffff;
-            background-image: 
-                radial-gradient(at 0% 0%, hsla(210,100%,95%,1) 0, transparent 50%), 
-                radial-gradient(at 100% 100%, hsla(190,100%,95%,1) 0, transparent 50%);
+        /* Modern Premium Tech Font */
+        @import url('https://fonts.googleapis.com/css2?family=Outfit:wght@200;300;400;500;600;700;800;900&display=swap');
+
+        :root {
+            --glass-bg: rgba(9, 14, 25, 0.4);
+            --glass-border: rgba(255, 255, 255, 0.08);
         }
 
-        .hero-gradient {
-            background: linear-gradient(135deg, #2563eb 0%, #0891b2 100%);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
+        body {
+            font-family: 'Outfit', sans-serif;
+            color: #f8fafc;
+            overflow-x: hidden;
+            -webkit-font-smoothing: antialiased;
+            background-color: #02050f;
+            scroll-behavior: smooth;
         }
 
-        .reveal { opacity: 0; transform: translateY(30px); transition: all 0.8s ease-out; }
-        .reveal.active { opacity: 1; transform: translateY(0); }
+        /* Ambient Aurora Physics */
+        @keyframes pulse-slow {
 
-        .nav-blur { backdrop-filter: blur(12px); background: rgba(255, 255, 255, 0.8); }
-        
-        /* Floating Animation for UI elements */
-        @keyframes float { 0% { transform: translateY(0px); } 50% { transform: translateY(-20px); } 100% { transform: translateY(0px); } }
-        .animate-float { animation: float 6s ease-in-out infinite; }
+            0%,
+            100% {
+                opacity: 0.15;
+                transform: scale(1) translate(0px, 0px);
+            }
+
+            50% {
+                opacity: 0.25;
+                transform: scale(1.05) translate(20px, -20px);
+            }
+        }
+
+        @keyframes pulse-slower {
+
+            0%,
+            100% {
+                opacity: 0.15;
+                transform: scale(1) translate(0px, 0px);
+            }
+
+            50% {
+                opacity: 0.25;
+                transform: scale(1.1) translate(-20px, 20px);
+            }
+        }
+
+        .animate-pulse-slow {
+            animation: pulse-slow 12s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+        }
+
+        .animate-pulse-slower {
+            animation: pulse-slower 15s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+        }
+
+        @keyframes shimmer {
+            100% {
+                transform: translateX(100%) skewX(-20deg);
+            }
+        }
+
+        /* Minimal Scrollbar */
+        ::-webkit-scrollbar {
+            width: 6px;
+        }
+
+        ::-webkit-scrollbar-track {
+            background: transparent;
+        }
+
+        ::-webkit-scrollbar-thumb {
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 10px;
+        }
+
+        ::-webkit-scrollbar-thumb:hover {
+            background: rgba(255, 255, 255, 0.2);
+        }
+
+        /* Premium Blurred Nav */
+        .nav-glass {
+            background: linear-gradient(180deg, rgba(3, 6, 16, 0.9) 0%, rgba(3, 6, 16, 0) 100%);
+            backdrop-filter: blur(24px);
+            -webkit-backdrop-filter: blur(24px);
+            border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+        }
+
+        /* Ultimate Glass Bento Cards */
+        .hackathon-card {
+            background: var(--glass-bg);
+            backdrop-filter: blur(24px);
+            -webkit-backdrop-filter: blur(24px);
+            border-radius: 1.75rem;
+            border: 1px solid rgba(255, 255, 255, 0.06);
+            box-shadow: 0 4px 40px rgba(0, 0, 0, 0.2), inset 0 1px 0 rgba(255, 255, 255, 0.05);
+            position: relative;
+            overflow: hidden;
+            transition: all 0.5s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+
+        .login-card {
+            background: rgba(18, 25, 43, 0.4);
+            backdrop-filter: blur(24px);
+            -webkit-backdrop-filter: blur(24px);
+            border-radius: 1.75rem;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.5), inset 0 1px 0 rgba(255, 255, 255, 0.05);
+        }
+
+        /* 3D Inner Glow Physics */
+        .hackathon-card::before {
+            content: '';
+            position: absolute;
+            inset: 0;
+            border-radius: 1.75rem;
+            padding: 2px;
+            background: linear-gradient(135deg, rgba(255, 255, 255, 0.15) 0%, transparent 40%, transparent 60%, rgba(255, 255, 255, 0.05) 100%);
+            -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+            -webkit-mask-composite: xor;
+            mask-composite: exclude;
+            pointer-events: none;
+            transition: all 0.5s ease;
+        }
+
+        .hackathon-card:hover {
+            transform: translateY(-8px) scale(1.02);
+            background: rgba(18, 25, 43, 0.7);
+            border-color: transparent;
+            box-shadow: 0 40px 60px -10px rgba(0, 0, 0, 0.9), inset 0 0 0 1px rgba(255, 255, 255, 0.1);
+        }
+
+        .hackathon-card:hover::before {
+            background: linear-gradient(135deg, rgba(59, 130, 246, 0.9) 0%, transparent 50%, rgba(139, 92, 246, 0.7) 100%);
+        }
+
+        /* Inputs */
+        .glass-input {
+            background: rgba(255, 255, 255, 0.03);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            color: white;
+            transition: all 0.3s ease;
+        }
+
+        .glass-input:focus {
+            background: rgba(255, 255, 255, 0.05);
+            border-color: rgba(59, 130, 246, 0.5);
+            box-shadow: 0 0 20px rgba(59, 130, 246, 0.15);
+            outline: none;
+        }
+
+        /* Staggered Boot Animations */
+        @keyframes slideUpFade {
+            0% {
+                opacity: 0;
+                transform: translateY(30px) scale(0.98);
+                filter: blur(5px);
+            }
+
+            100% {
+                opacity: 1;
+                transform: translateY(0) scale(1);
+                filter: blur(0px);
+            }
+        }
+
+        .animate-item {
+            opacity: 0;
+            animation: slideUpFade 1s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+        }
+
+        .reveal {
+            opacity: 0;
+            transform: translateY(30px);
+            transition: all 0.8s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+
+        .reveal.active {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        .delay-100 {
+            animation-delay: 150ms;
+        }
+
+        .delay-200 {
+            animation-delay: 300ms;
+        }
+
+        .delay-300 {
+            animation-delay: 450ms;
+        }
+
+        .delay-400 {
+            animation-delay: 600ms;
+        }
     </style>
 </head>
 
-<body class="mesh-bg text-slate-900 overflow-x-hidden">
-    <nav class="fixed top-0 w-full z-50 nav-blur border-b border-slate-200/50" id="navbar">
-        <div class="max-w-7xl mx-auto px-6 py-4 flex items-center justify-between">
-            <div class="flex items-center gap-3 group cursor-pointer">
-                <div class="w-10 h-10 bg-gradient-to-br from-blue-600 to-cyan-500 rounded-xl flex items-center justify-center text-white font-bold text-lg shadow-lg group-hover:rotate-12 transition-all">K</div>
-                <span class="text-2xl font-black tracking-tighter text-slate-800">KNOT<span class="text-blue-600">.</span></span>
+<body class="min-h-screen flex flex-col selection:bg-blue-500/30 selection:text-white">
+
+    <!-- Hackathon Engine Background -->
+    <div class="fixed inset-0 z-[-10]">
+        <!-- Cybernetic Grid Overlay -->
+        <div
+            class="absolute inset-0 bg-[linear-gradient(rgba(255,255,255,0.03)_1px,transparent_1px),linear-gradient(90deg,rgba(255,255,255,0.03)_1px,transparent_1px)] bg-[size:48px_48px]">
+        </div>
+
+        <!-- Giant Glowing Orbs -->
+        <div
+            class="absolute top-[10%] left-[10%] w-[50vw] h-[50vw] rounded-full bg-blue-600/20 blur-[150px] animate-pulse-slow mix-blend-screen">
+        </div>
+        <div
+            class="absolute bottom-[20%] right-[5%] w-[40vw] h-[40vw] rounded-full bg-violet-600/15 blur-[140px] animate-pulse-slower mix-blend-screen">
+        </div>
+
+        <!-- Massive Watermark for Enterprise feel -->
+        <h1
+            class="fixed top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 text-[28vw] font-black text-white/[0.015] pointer-events-none z-[-1] select-none tracking-tighter mix-blend-overlay">
+            KNOT</h1>
+    </div>
+
+    <!-- Navigation Area -->
+    <nav class="nav-glass sticky top-0 z-50 px-6 py-4">
+        <div class="max-w-[1400px] mx-auto flex justify-between items-center relative z-10">
+
+            <div class="flex items-center gap-4 cursor-pointer group" onclick="window.scrollTo(0,0)">
+                <div
+                    class="w-12 h-12 bg-white/5 border border-white/10 rounded-2xl flex items-center justify-center backdrop-blur-md group-hover:bg-blue-500/20 group-hover:border-blue-400/40 transition-all duration-500 relative overflow-hidden shadow-[0_0_20px_rgba(59,130,246,0.1)]">
+                    <div
+                        class="absolute inset-0 bg-gradient-to-tr from-blue-500/40 to-indigo-600/40 opacity-0 group-hover:opacity-100 transition-opacity duration-500">
+                    </div>
+                    <i
+                        class="fa-solid fa-layer-group text-slate-200 text-xl relative z-10 group-hover:scale-110 group-hover:text-white transition-all duration-500 drop-shadow-md"></i>
+                </div>
+                <div class="flex flex-col">
+                    <span
+                        class="text-2xl font-black tracking-tighter text-white uppercase leading-none drop-shadow-lg">KNOT</span>
+                    <div class="flex items-center gap-1.5 mt-1 hidden sm:flex">
+                        <div class="w-1 h-1 rounded-full bg-blue-400 animate-ping"></div>
+                        <span class="text-[0.6rem] font-bold text-blue-400/80 uppercase tracking-[0.25em]">System
+                            Node</span>
+                    </div>
+                </div>
             </div>
 
             <div class="hidden md:flex items-center gap-8">
-                <a href="#features" class="text-sm font-semibold text-slate-600 hover:text-blue-600 transition-colors">Ecosystem</a>
-                <a href="#impact" class="text-sm font-semibold text-slate-600 hover:text-blue-600 transition-colors">Live Impact</a>
-                <a href="/marketplace" class="text-sm font-semibold text-slate-600 hover:text-blue-600 transition-colors">Marketplace</a>
+                <a href="#features"
+                    class="text-[11px] font-bold text-slate-400 hover:text-white uppercase tracking-[0.15em] transition-colors">Core
+                    Modules</a>
+                <a href="#impact"
+                    class="text-[11px] font-bold text-slate-400 hover:text-white uppercase tracking-[0.15em] transition-colors">Telemetry</a>
+                <a href="/marketplace"
+                    class="text-[11px] font-bold text-slate-400 hover:text-white uppercase tracking-[0.15em] transition-colors">Marketplace</a>
             </div>
 
-            <div class="flex items-center gap-4">
-                <a href="/login" class="px-5 py-2 text-sm font-bold text-slate-700 hover:bg-slate-100 rounded-xl transition-all">Login</a>
-                <button class="px-6 py-2.5 bg-blue-600 text-white rounded-xl font-bold text-sm shadow-xl shadow-blue-600/20 hover:scale-105 active:scale-95 transition-all">Join Portal</button>
+            <div class="flex items-center gap-4 sm:gap-6">
+                <!-- Management Button -->
+                <div>
+                    <a href="#" onclick="window.scrollTo(0,0)"
+                        class="relative group flex items-center justify-center px-6 py-2.5 rounded-full bg-blue-500/10 border border-blue-500/30 hover:border-blue-400 hover:bg-blue-500/20 transition-all duration-500 overflow-hidden shadow-[0_0_20px_rgba(59,130,246,0.15)]">
+                        <span
+                            class="relative z-10 flex items-center gap-2 text-[10px] sm:text-[11px] font-black text-blue-300 uppercase tracking-[0.15em] group-hover:text-white transition-colors">
+                            <i class="fas fa-fingerprint"></i>
+                            <span class="hidden sm:inline">Access Portal</span><span class="sm:hidden">Login</span>
+                        </span>
+                    </a>
+                </div>
             </div>
         </div>
     </nav>
 
-    <header class="relative pt-48 pb-32 px-6 overflow-hidden">
-        <div class="max-w-5xl mx-auto text-center relative z-10">
-            <div class="inline-block px-4 py-1.5 mb-6 bg-blue-50 border border-blue-100 rounded-full">
-                <span class="text-blue-600 text-xs font-bold tracking-widest uppercase">Platform v2.0 is Live</span>
-            </div>
-            <h1 class="text-6xl md:text-8xl font-black text-slate-900 mb-8 tracking-tighter leading-none">
-                Untangling <br/>
-                <span class="hero-gradient">Campus Chaos</span>
-            </h1>
-            <p class="text-lg md:text-xl text-slate-500 mb-12 max-w-2xl mx-auto leading-relaxed font-medium">
-                The definitive operating system for I.T.S Engineering College. 
-                Manage resources, trade items, and verify status in real-time.
-            </p>
-            
-            <div class="flex flex-col sm:flex-row justify-center gap-6">
-                <a href="/resources" class="group px-10 py-5 bg-slate-900 text-white rounded-2xl font-bold text-lg shadow-2xl hover:bg-blue-600 transition-all flex items-center justify-center">
-                    Reserve a Resource 
-                    <i class="fas fa-arrow-right ml-3 group-hover:translate-x-2 transition-transform"></i>
-                </a>
-                <a href="/marketplace" class="px-10 py-5 bg-white text-slate-900 border border-slate-200 rounded-2xl font-bold text-lg hover:bg-slate-50 transition-all">
-                    Browse Marketplace
-                </a>
-            </div>
-        </div>
+    <!-- Main Content Area -->
+    <main class="flex-1 flex flex-col justify-center">
 
-        <div class="absolute top-1/2 left-10 w-64 h-64 bg-blue-400/10 rounded-full blur-3xl animate-float"></div>
-        <div class="absolute top-1/4 right-10 w-80 h-80 bg-cyan-400/10 rounded-full blur-3xl animate-float" style="animation-delay: 2s"></div>
-    </header>
-
-    <section class="py-32 px-6" id="features">
-        <div class="max-w-7xl mx-auto">
-            <div class="flex flex-col md:flex-row justify-between items-end mb-20 gap-6">
-                <div class="max-w-xl">
-                    <h2 class="text-4xl md:text-5xl font-black text-slate-900 mb-6 tracking-tight">One Link. <br/>All Campus Tools.</h2>
-                    <p class="text-slate-500 font-medium">Humne campus ki problems ko features mein badal diya hai.</p>
-                </div>
-                <div class="text-blue-600 font-bold flex items-center gap-2 cursor-pointer group">
-                    View System Architecture <i class="fas fa-chevron-right group-hover:translate-x-1 transition-transform"></i>
-                </div>
-            </div>
-
-            <div class="grid md:grid-cols-3 gap-8">
-                <div class="reveal bg-white p-10 rounded-[40px] border border-slate-100 shadow-sm hover:shadow-2xl hover:shadow-blue-500/10 transition-all group">
-                    <div class="w-16 h-16 bg-blue-600 text-white rounded-3xl flex items-center justify-center text-2xl mb-8 group-hover:rotate-6 transition-transform">
-                        <i class="fas fa-qrcode"></i>
+        <!-- Hero Section with Login Form -->
+        <header class="max-w-[1300px] mx-auto w-full px-6 py-12 md:py-24 flex items-center relative z-10 min-h-[85vh]">
+            <div class="grid grid-cols-1 lg:grid-cols-5 gap-12 lg:gap-16 items-center w-full">
+                <!-- Hero Text & Buttons (3 columns wide) -->
+                <div class="animate-item lg:col-span-3">
+                    <div
+                        class="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-white/[0.03] border border-white/10 text-[9px] font-bold uppercase tracking-[0.2em] text-slate-300 mb-8 backdrop-blur-md shadow-xl">
+                        <span class="w-1.5 h-1.5 rounded-full bg-blue-400 animate-[pulse_2s_infinite]"></span>
+                        Platform v2.0 is Live
                     </div>
-                    <h3 class="text-2xl font-bold mb-4">Smart QR Look-up</h3>
-                    <p class="text-slate-500 leading-relaxed font-medium">Scan any lab or hall to instantly see the real-time occupancy status and next available slot.</p>
-                </div>
 
-                <div class="reveal bg-white p-10 rounded-[40px] border border-slate-100 shadow-sm hover:shadow-2xl hover:shadow-green-500/10 transition-all group" style="transition-delay: 0.2s">
-                    <div class="w-16 h-16 bg-emerald-500 text-white rounded-3xl flex items-center justify-center text-2xl mb-8 group-hover:rotate-6 transition-transform">
-                        <i class="fas fa-store"></i>
+                    <h1 class="text-5xl md:text-6xl lg:text-[5.5rem] font-black tracking-tighter mb-6 leading-[0.9]">
+                        <span
+                            class="text-transparent bg-clip-text bg-gradient-to-b from-white to-slate-400 drop-shadow-md">Untangling</span>
+                        <br />
+                        <span
+                            class="text-transparent bg-clip-text bg-gradient-to-r from-blue-400 via-cyan-300 to-indigo-400 filter drop-shadow-[0_0_20px_rgba(59,130,246,0.3)]">Campus
+                            Chaos.</span>
+                    </h1>
+
+                    <p class="text-slate-400 md:text-lg font-medium tracking-wide max-w-xl mb-10 leading-relaxed">
+                        The definitive operating system for I.T.S Engineering College.
+                        A complete ecosystem inside your device—manage your academic resources, securely trade with
+                        peers, and access verified nodes in one click.
+                    </p>
+
+                    <div class="flex flex-col sm:flex-row flex-wrap gap-4 items-center">
+                        <a href="/login"
+                            class="w-full sm:w-auto relative group/btn flex items-center justify-center px-8 py-4 rounded-xl bg-blue-600 hover:bg-blue-500 text-white font-black tracking-[0.1em] uppercase text-xs transition-all duration-300 shadow-[0_0_20px_rgba(37,99,235,0.3)] hover:shadow-[0_0_30px_rgba(37,99,235,0.5)] overflow-hidden">
+                            <span
+                                class="absolute inset-0 w-full h-full bg-gradient-to-r from-transparent via-white/10 to-transparent -translate-x-[150%] skew-x-[-20deg] group-hover/btn:animate-[shimmer_1s_infinite]"></span>
+                            <span class="relative z-10 flex items-center gap-2">
+                                <i class="fas fa-fingerprint"></i> System Login
+                            </span>
+                        </a>
+                        <a href="/resources"
+                            class="w-full sm:w-auto flex items-center justify-center px-8 py-4 bg-white/[0.05] hover:bg-white/[0.1] border border-white/10 rounded-xl font-bold tracking-[0.1em] text-xs uppercase text-slate-200 transition-all shadow-lg backdrop-blur-md">
+                            <i class="fas fa-layer-group mr-2 text-indigo-400"></i> Reserve Resource
+                        </a>
+                        <a href="/marketplace"
+                            class="w-full sm:w-auto flex items-center justify-center px-8 py-4 bg-white/[0.05] hover:bg-white/[0.1] border border-white/10 rounded-xl font-bold tracking-[0.1em] text-xs uppercase text-slate-200 transition-all shadow-lg backdrop-blur-md">
+                            <i class="fas fa-tags mr-2 text-emerald-400"></i> Browse Marketplace
+                        </a>
                     </div>
-                    <h3 class="text-2xl font-bold mb-4">Verified Trade</h3>
-                    <p class="text-slate-500 leading-relaxed font-medium">A closed-loop marketplace for students. Buy, sell, or recover lost items with institutional trust.</p>
                 </div>
 
-                <div class="reveal bg-white p-10 rounded-[40px] border border-slate-100 shadow-sm hover:shadow-2xl hover:shadow-purple-500/10 transition-all group" style="transition-delay: 0.4s">
-                    <div class="w-16 h-16 bg-indigo-600 text-white rounded-3xl flex items-center justify-center text-2xl mb-8 group-hover:rotate-6 transition-transform">
-                        <i class="fas fa-shield-halved"></i>
+                <!-- Info Card (2 columns wide) -->
+                <div class="animate-item delay-200 mt-10 lg:mt-0 lg:col-span-2 w-full max-w-md mx-auto lg:ml-auto">
+                    <div class="login-card p-8 relative overflow-hidden group h-full">
+                        <div
+                            class="absolute -right-20 -top-20 w-48 h-48 bg-blue-500/10 blur-3xl rounded-full pointer-events-none group-hover:bg-blue-500/20 transition-all duration-700">
+                        </div>
+                        <div
+                            class="absolute -left-20 -bottom-20 w-48 h-48 bg-emerald-500/10 blur-3xl rounded-full pointer-events-none group-hover:bg-emerald-500/20 transition-all duration-700">
+                        </div>
+
+                        <div class="relative z-10">
+                            <div class="flex items-center gap-4 mb-6 border-b border-white/5 pb-6">
+                                <div
+                                    class="w-12 h-12 rounded-2xl bg-indigo-500/10 flex items-center justify-center border border-indigo-500/30 shrink-0 shadow-[inset_0_2px_10px_rgba(255,255,255,0.05)]">
+                                    <i class="fas fa-satellite-dish text-indigo-400 text-xl"></i>
+                                </div>
+                                <div>
+                                    <h2 class="text-xl font-black text-white tracking-tight leading-none mb-1">
+                                        Architecture Info</h2>
+                                    <p class="text-[9px] uppercase tracking-[0.2em] text-slate-400 font-bold">Network
+                                        Broadcast</p>
+                                </div>
+                            </div>
+
+                            <div class="space-y-4">
+                                <div
+                                    class="p-4 rounded-xl bg-white/[0.02] border border-white/5 hover:bg-white/[0.04] transition-all">
+                                    <h4
+                                        class="text-xs font-bold text-white uppercase tracking-widest mb-1 flex items-center justify-between">
+                                        End-to-End Encryption <i class="fas fa-shield-check text-emerald-400"></i>
+                                    </h4>
+                                    <p class="text-xs text-slate-400 font-medium leading-relaxed">All data traversing
+                                        the KNOT network is protected with enterprise AES standard security layers.</p>
+                                </div>
+
+                                <div
+                                    class="p-4 rounded-xl bg-white/[0.02] border border-white/5 hover:bg-white/[0.04] transition-all">
+                                    <h4
+                                        class="text-xs font-bold text-white uppercase tracking-widest mb-1 flex items-center justify-between">
+                                        Zero-Latency <i class="fas fa-bolt text-yellow-400"></i>
+                                    </h4>
+                                    <p class="text-xs text-slate-400 font-medium leading-relaxed">Cloud edges
+                                        strategically load-balance traffic to ensure immediate response times across the
+                                        campus.</p>
+                                </div>
+
+                                <div
+                                    class="p-4 rounded-xl bg-white/[0.02] border border-white/5 hover:bg-white/[0.04] transition-all">
+                                    <h4
+                                        class="text-xs font-bold text-white uppercase tracking-widest mb-1 flex items-center justify-between">
+                                        Institutional Identity <i class="fas fa-id-card text-blue-400"></i>
+                                    </h4>
+                                    <p class="text-xs text-slate-400 font-medium leading-relaxed">Exclusively restricted
+                                        and synced with @its.edu.in accounts to maintain ecosystem integrity.</p>
+                                </div>
+                            </div>
+                        </div>
                     </div>
-                    <h3 class="text-2xl font-bold mb-4">DMARC Auth</h3>
-                    <p class="text-slate-500 leading-relaxed font-medium">Enterprise-grade security using Resend API to ensure only verified @its.edu.in users gain access.</p>
                 </div>
             </div>
-        </div>
-    </section>
+        </header>
 
-    <section class="py-24 bg-slate-900 text-white" id="impact">
-        <div class="max-w-7xl mx-auto px-6">
-            <div class="grid grid-cols-2 md:grid-cols-4 gap-12 text-center">
-                <div class="reveal">
-                    <div class="text-5xl font-black mb-2 text-blue-400 counter" data-target="2500">0</div>
-                    <p class="text-slate-400 text-sm font-bold uppercase tracking-widest">Active Minds</p>
-                </div>
-                <div class="reveal" style="transition-delay: 0.1s">
-                    <div class="text-5xl font-black mb-2 text-blue-400 counter" data-target="850">0</div>
-                    <p class="text-slate-400 text-sm font-bold uppercase tracking-widest">Live Bookings</p>
-                </div>
-                <div class="reveal" style="transition-delay: 0.2s">
-                    <div class="text-5xl font-black mb-2 text-blue-400 counter" data-target="120">0</div>
-                    <p class="text-slate-400 text-sm font-bold uppercase tracking-widest">Items Reunited</p>
-                </div>
-                <div class="reveal" style="transition-delay: 0.3s">
-                    <div class="text-5xl font-black mb-2 text-blue-400 counter" data-target="99">0</div>
-                    <p class="text-slate-400 text-sm font-bold uppercase tracking-widest">System Uptime %</p>
+        <!-- Ecosystem Bento Grid Section -->
+        <section id="features" class="max-w-[1200px] mx-auto w-full px-6 py-24 relative z-10 border-t border-white/5">
+            <div class="flex flex-col md:flex-row justify-between items-end mb-16 gap-6 reveal pt-10">
+                <div class="max-w-2xl">
+                    <div
+                        class="inline-flex items-center gap-2 px-3 py-1.5 rounded border border-white/5 bg-white/[0.02] text-[9px] font-bold uppercase tracking-[0.25em] text-slate-400 mb-6 backdrop-blur-md">
+                        <i class="fas fa-microchip text-blue-500"></i> Core Infrastructure
+                    </div>
+                    <h2
+                        class="text-4xl md:text-5xl lg:text-6xl font-black text-white mb-6 tracking-tighter leading-none">
+                        One Framework. <br />
+                        <span class="text-transparent bg-clip-text bg-gradient-to-r from-slate-300 to-slate-500">All
+                            Campus Tools.</span>
+                    </h2>
+                    <p class="text-slate-400 font-medium text-lg max-w-xl">
+                        Transforming structural limitations into seamlessly connected features. A complete ecosystem
+                        inside your device.
+                    </p>
                 </div>
             </div>
-        </div>
-    </section>
 
-    <footer class="py-20 px-6 border-t border-slate-100">
-        <div class="max-w-7xl mx-auto flex flex-col md:flex-row justify-between items-center gap-8">
-            <div class="flex items-center gap-3">
-                <div class="w-8 h-8 bg-slate-900 text-white rounded-lg flex items-center justify-center font-bold">K</div>
-                <span class="text-xl font-bold tracking-tighter">KNOT<span class="text-blue-600">.</span></span>
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-6 md:gap-8">
+                <!-- Feature 1 -->
+                <div class="hackathon-card group p-8 md:p-10 flex flex-col h-full min-h-[340px] reveal"
+                    style="transition-delay: 0.1s">
+                    <div class="absolute top-6 right-6 text-[10px] font-mono text-slate-600 font-bold tracking-widest">
+                        <i class="fas fa-circle text-[6px] text-blue-500/80 mr-1.5 animate-pulse"></i>MOD.01</div>
+
+                    <div
+                        class="w-14 h-14 rounded-2xl flex items-center justify-center mb-8 bg-blue-500/10 border border-blue-500/20 group-hover:bg-blue-600/20 group-hover:border-blue-400/40 transition-all duration-500 group-hover:-translate-y-1 shadow-[inset_0_2px_10px_rgba(255,255,255,0.05)] group-hover:shadow-[0_0_30px_rgba(59,130,246,0.2)]">
+                        <i
+                            class="fas fa-qrcode text-2xl text-blue-400 group-hover:text-blue-300 group-hover:scale-110 transition-all duration-500 z-10"></i>
+                    </div>
+
+                    <h3 class="text-3xl font-extrabold text-white mb-3 tracking-tight">Smart Check-in</h3>
+                    <p
+                        class="text-slate-400 text-sm leading-relaxed mb-8 font-medium group-hover:text-slate-300 transition-colors">
+                        Scan any lab or hall to instantly retrieve real-time occupancy algorithms and book available
+                        slots dynamically.</p>
+
+                    <div class="mt-auto pt-6 border-t border-white/[0.04]">
+                        <div class="flex items-center gap-2">
+                            <span
+                                class="px-2 py-0.5 rounded bg-blue-500/10 text-[8px] font-black text-blue-400 tracking-[0.2em] border border-blue-500/20">LIVE
+                                SYNC</span>
+                            <span
+                                class="px-2 py-0.5 rounded bg-white/5 text-[8px] font-black text-slate-300 tracking-[0.2em] border border-white/10">QR
+                                AUTH</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Feature 2 -->
+                <div class="hackathon-card group p-8 md:p-10 flex flex-col h-full min-h-[340px] reveal"
+                    style="transition-delay: 0.2s">
+                    <div class="absolute top-6 right-6 text-[10px] font-mono text-slate-600 font-bold tracking-widest">
+                        <i class="fas fa-circle text-[6px] text-emerald-500/80 mr-1.5 animate-pulse"></i>MOD.02</div>
+
+                    <div
+                        class="w-14 h-14 rounded-2xl flex items-center justify-center mb-8 bg-emerald-500/10 border border-emerald-500/20 group-hover:bg-emerald-600/20 group-hover:border-emerald-400/40 transition-all duration-500 group-hover:-translate-y-1 shadow-[inset_0_2px_10px_rgba(255,255,255,0.05)] group-hover:shadow-[0_0_30px_rgba(16,185,129,0.2)]">
+                        <i
+                            class="fas fa-store text-2xl text-emerald-400 group-hover:text-emerald-300 group-hover:scale-110 transition-all duration-500 z-10"></i>
+                    </div>
+
+                    <h3 class="text-3xl font-extrabold text-white mb-3 tracking-tight">Verified Trade</h3>
+                    <p
+                        class="text-slate-400 text-sm leading-relaxed mb-8 font-medium group-hover:text-slate-300 transition-colors">
+                        A closed-loop marketplace powered by institutional trust. Securely buy, sell, or recover
+                        academic assets.</p>
+
+                    <div class="mt-auto pt-6 border-t border-white/[0.04]">
+                        <div class="flex items-center gap-2">
+                            <span
+                                class="px-2 py-0.5 rounded bg-emerald-500/10 text-[8px] font-black text-emerald-400 tracking-[0.2em] border border-emerald-500/20">P2P
+                                PROTOCOL</span>
+                            <span
+                                class="px-2 py-0.5 rounded bg-white/5 text-[8px] font-black text-slate-300 tracking-[0.2em] border border-white/10">VERIFIED</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Feature 3 -->
+                <div class="hackathon-card group p-8 md:p-10 flex flex-col h-full min-h-[340px] reveal"
+                    style="transition-delay: 0.3s">
+                    <div class="absolute top-6 right-6 text-[10px] font-mono text-slate-600 font-bold tracking-widest">
+                        <i class="fas fa-circle text-[6px] text-indigo-500/80 mr-1.5 animate-pulse"></i>MOD.03</div>
+
+                    <div
+                        class="w-14 h-14 rounded-2xl flex items-center justify-center mb-8 bg-indigo-500/10 border border-indigo-500/20 group-hover:bg-indigo-600/20 group-hover:border-indigo-400/40 transition-all duration-500 group-hover:-translate-y-1 shadow-[inset_0_2px_10px_rgba(255,255,255,0.05)] group-hover:shadow-[0_0_30px_rgba(99,102,241,0.2)]">
+                        <i
+                            class="fas fa-shield-halved text-2xl text-indigo-400 group-hover:text-indigo-300 group-hover:scale-110 transition-all duration-500 z-10"></i>
+                    </div>
+
+                    <h3 class="text-3xl font-extrabold text-white mb-3 tracking-tight">DMARC Auth</h3>
+                    <p
+                        class="text-slate-400 text-sm leading-relaxed mb-8 font-medium group-hover:text-slate-300 transition-colors">
+                        Enterprise-grade security using robust verification logic to ensure only institutional network
+                        identity gains access.</p>
+
+                    <div class="mt-auto pt-6 border-t border-white/[0.04]">
+                        <div class="flex items-center gap-2">
+                            <span
+                                class="px-2 py-0.5 rounded bg-indigo-500/10 text-[8px] font-black text-indigo-400 tracking-[0.2em] border border-indigo-500/20">AES-SECURE</span>
+                            <span
+                                class="px-2 py-0.5 rounded bg-white/5 text-[8px] font-black text-slate-300 tracking-[0.2em] border border-white/10">COMPLIANT</span>
+                        </div>
+                    </div>
+                </div>
             </div>
-            <p class="text-slate-400 text-sm font-medium">Built with ❤️ for I.T.S Engineering College by Niso Ecosystem</p>
-            <div class="flex gap-6 text-slate-400">
-                <i class="fab fa-github cursor-pointer hover:text-slate-900 transition-colors"></i>
-                <i class="fab fa-linkedin cursor-pointer hover:text-slate-900 transition-colors"></i>
+        </section>
+
+        <!-- Live Impact Section -->
+        <section id="impact" class="w-full pb-32 pt-20 px-6 relative z-10">
+            <div
+                class="max-w-[1200px] mx-auto bg-[#050a1a]/80 backdrop-blur-3xl border border-white/5 rounded-[2rem] p-10 md:p-16 shadow-2xl relative overflow-hidden">
+                <div
+                    class="absolute top-0 right-0 w-full h-1 bg-gradient-to-r from-blue-600 via-emerald-500 to-indigo-500 opacity-50">
+                </div>
+
+                <div class="text-center mb-16">
+                    <span
+                        class="inline-flex items-center px-4 py-2 rounded-full border border-blue-500/20 bg-blue-500/5 text-[10px] font-bold tracking-[0.3em] text-blue-400 uppercase">
+                        <span class="w-1.5 h-1.5 rounded-full bg-blue-500 mr-2 animate-ping"></span> Live Metrics
+                    </span>
+                </div>
+
+                <div class="grid grid-cols-2 md:grid-cols-4 gap-10 md:gap-16 text-center">
+                    <div class="reveal" style="transition-delay: 0s">
+                        <div
+                            class="text-5xl md:text-6xl font-black mb-3 text-transparent bg-clip-text bg-gradient-to-b from-white to-slate-400 drop-shadow-md">
+                            <span class="counter" data-target="4">0</span>
+                        </div>
+                        <p class="text-slate-500 text-[10px] font-bold uppercase tracking-[0.25em]">Active Minds</p>
+                    </div>
+                    <div class="reveal" style="transition-delay: 0.1s">
+                        <div
+                            class="text-5xl md:text-6xl font-black mb-3 text-transparent bg-clip-text bg-gradient-to-b from-white to-slate-400 drop-shadow-md">
+                            <span class="counter" data-target="40">0</span>
+                        </div>
+                        <p class="text-slate-500 text-[10px] font-bold uppercase tracking-[0.25em]">Live Bookings</p>
+                    </div>
+                    <div class="reveal" style="transition-delay: 0.2s">
+                        <div
+                            class="text-5xl md:text-6xl font-black mb-3 text-transparent bg-clip-text bg-gradient-to-b from-white to-slate-400 drop-shadow-md">
+                            <span class="counter" data-target="55">0</span>
+                        </div>
+                        <p class="text-slate-500 text-[10px] font-bold uppercase tracking-[0.25em]">Assets Reunited</p>
+                    </div>
+                    <div class="reveal" style="transition-delay: 0.3s">
+                        <div
+                            class="text-5xl md:text-6xl font-black mb-3 text-transparent bg-clip-text bg-gradient-to-b from-white to-slate-400 drop-shadow-md">
+                            <span class="counter" data-target="99">0</span><span
+                                class="text-3xl text-slate-500">%</span>
+                        </div>
+                        <p class="text-slate-500 text-[10px] font-bold uppercase tracking-[0.25em]">System Uptime</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+    </main>
+
+    <!-- OS Footer -->
+    <footer
+        class="px-6 py-12 border-t border-white/[0.02] mt-auto relative z-10 w-full bg-[#02050f]/80 backdrop-blur-lg">
+        <div class="max-w-[1200px] mx-auto flex flex-col md:flex-row justify-between items-center gap-6">
+            <div class="flex items-center gap-3 text-slate-600">
+                <i class="fa-solid fa-microchip text-sm"></i>
+                <span class="text-[10px] font-bold tracking-[0.3em] uppercase">Built for Performance</span>
+            </div>
+
+            <div class="text-slate-600 text-[10px] font-black uppercase tracking-[0.4em] text-center">
+                &copy; 2026 KNOT &bull; Enterprise Campus Architecture
+            </div>
+
+            <div class="flex gap-6 text-slate-600">
+                <i class="fab fa-github cursor-pointer hover:text-white transition-colors"></i>
+                <i class="fab fa-linkedin cursor-pointer hover:text-white transition-colors"></i>
             </div>
         </div>
     </footer>
 
+    <!-- Interactive Observers -->
     <script>
         // Scroll Reveal Logic
-        const observerOptions = { threshold: 0.1 };
+        const observerOptions = { threshold: 0.1, rootMargin: "0px 0px -50px 0px" };
         const observer = new IntersectionObserver((entries) => {
             entries.forEach(entry => {
                 if (entry.isIntersecting) {
                     entry.target.classList.add('active');
-                    if(entry.target.classList.contains('counter')) startCounter(entry.target);
+
+                    // Trigger counters once
+                    if (entry.target.querySelector('.counter') && !entry.target.classList.contains('counted')) {
+                        entry.target.classList.add('counted');
+                        const counterEl = entry.target.querySelector('.counter');
+                        startCounter(counterEl);
+                    }
                 }
             });
         }, observerOptions);
 
-        document.querySelectorAll('.reveal, .counter').forEach(el => observer.observe(el));
+        document.querySelectorAll('.reveal').forEach(el => observer.observe(el));
 
-        // Counter Animation
+        // Counter Animation Logic
         function startCounter(el) {
             const target = +el.getAttribute('data-target');
             let count = 0;
-            const speed = target / 50;
+            const speed = target / 50; // Controls duration
+
             const update = () => {
                 count += speed;
                 if (count < target) {
                     el.innerText = Math.floor(count);
-                    setTimeout(update, 20);
+                    requestAnimationFrame(update);
                 } else {
                     el.innerText = target + (target === 99 ? "" : "+");
                 }
             };
-            update();
+            requestAnimationFrame(update);
         }
     </script>
 </body>
+
 </html>
