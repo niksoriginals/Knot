@@ -453,6 +453,46 @@ def admin_delete_market(item_id):
     conn.close()
     return jsonify({"success": True, "message": "Ad removed by admin"})   
 
+# --- RESOURCE API: FETCH ALL ---
+@app.route("/api/resources", methods=["GET"])
+def get_all_resources():
+    try:
+        conn = get_db()
+        resources = conn.execute("SELECT * FROM resources").fetchall()
+        conn.close()
+        return jsonify([dict(r) for r in resources])
+    except Exception as e:
+        return jsonify({"error": str(e)}), 500
+
+# --- RESOURCE API: BOOKING ---
+@app.route("/api/resources/book", methods=["POST"])
+def book_resource():
+    email = session.get("user")
+    if not email: return jsonify({"error": "Unauthorized"}), 401
+
+    data = request.json
+    res_id = data.get("resource_id")
+    start_time = data.get("start_time")
+    end_time = data.get("end_time")
+
+    try:
+        conn = get_db()
+        user = conn.execute("SELECT id FROM users WHERE email = ?", (email,)).fetchone()
+        if not user: return jsonify({"error": "User profile not found"}), 404
+        current_status = conn.execute("SELECT status FROM resources WHERE id = ?", (res_id,)).fetchone()
+        if current_status['status'] != 'Available':
+            return jsonify({"error": "Resource is currently occupied"}), 400
+        conn.execute('''
+            INSERT INTO bookings (user_id, resource_id, start_time, end_time, status)
+            VALUES (?, ?, ?, ?, 'Confirmed')
+        ''', (user['id'], res_id, start_time, end_time))
+        conn.execute("UPDATE resources SET status = 'Occupied' WHERE id = ?", (res_id,))
+        
+        conn.commit()
+        conn.close()
+        return jsonify({"success": True, "message": "Booking confirmed!"})
+    except Exception as e:
+        return jsonify({"error": str(e)}), 500
 
 
 
