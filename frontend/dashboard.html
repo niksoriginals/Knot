@@ -3,71 +3,94 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>KNOT | Campus Hub</title>
+    <title>KNOT Dashboard | Campus OS</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap');
-        body { font-family: 'Plus Jakarta Sans', sans-serif; background-color: #020617; color: #f8fafc; }
         
-        .nav-glass { background: rgba(2, 6, 23, 0.85); backdrop-filter: blur(20px); border-bottom: 1px solid rgba(255, 255, 255, 0.05); }
-        
+        body { 
+            font-family: 'Plus Jakarta Sans', sans-serif; 
+            background-color: #020617; 
+            color: #f8fafc; 
+            overflow-x: hidden;
+        }
+
+        .nav-glass { 
+            background: rgba(2, 6, 23, 0.8); 
+            backdrop-filter: blur(24px); 
+            border-bottom: 1px solid rgba(255, 255, 255, 0.05); 
+        }
+
         .action-card {
-            background: rgba(15, 23, 42, 0.4);
+            background: rgba(15, 23, 42, 0.3);
             border: 1px solid rgba(255, 255, 255, 0.05);
             transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+            border-radius: 2.5rem;
         }
+
         .action-card:hover {
-            background: rgba(15, 23, 42, 0.8);
+            background: rgba(15, 23, 42, 0.7);
             border-color: #3b82f6;
-            transform: translateY(-5px);
-            box-shadow: 0 20px 40px -20px rgba(59, 130, 246, 0.2);
+            transform: translateY(-6px);
+            box-shadow: 0 25px 50px -12px rgba(59, 130, 241, 0.15);
         }
-        
-        .badge { font-[9px] uppercase font-black tracking-widest px-2.5 py-1 rounded-md mt-1 inline-block; }
+
+        /* Badge Logic */
+        .role-badge { 
+            font-size: 9px; font-weight: 900; text-transform: uppercase; letter-spacing: 0.1em;
+            padding: 4px 10px; border-radius: 6px; display: inline-block; margin-top: 4px;
+        }
         .badge-admin { background: rgba(244, 63, 94, 0.1); color: #fb7185; border: 1px solid rgba(244, 63, 94, 0.2); }
         .badge-dean { background: rgba(168, 85, 247, 0.1); color: #c084fc; border: 1px solid rgba(168, 85, 247, 0.2); }
         .badge-hod { background: rgba(59, 130, 246, 0.1); color: #60a5fa; border: 1px solid rgba(59, 130, 246, 0.2); }
         .badge-student { background: rgba(71, 85, 105, 0.1); color: #94a3b8; border: 1px solid rgba(71, 85, 105, 0.2); }
 
-        .shimmer { background: linear-gradient(90deg, transparent, rgba(255,255,255,0.03), transparent); background-size: 200% 100%; animation: shimmer 2s infinite; }
+        .shimmer {
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.03), transparent);
+            background-size: 200% 100%;
+            animation: shimmer 2s infinite;
+        }
         @keyframes shimmer { 0% { background-position: -200% 0; } 100% { background-position: 200% 0; } }
+
+        .fade-in { animation: fadeIn 0.8s ease-out forwards; }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
     </style>
 </head>
 <body class="min-h-screen flex flex-col">
 
-    <nav class="nav-glass sticky top-0 z-50 px-8 py-4">
+    <nav class="nav-glass sticky top-0 z-50 px-6 py-4">
         <div class="max-w-7xl mx-auto flex justify-between items-center">
             <div class="flex items-center gap-4 cursor-pointer group" onclick="location.reload()">
-                <div class="w-10 h-10 bg-blue-600 rounded-xl flex items-center justify-center shadow-lg group-hover:rotate-12 transition-all">
+                <div class="w-10 h-10 bg-indigo-600 rounded-xl flex items-center justify-center shadow-lg group-hover:rotate-12 transition-all">
                     <i class="fas fa-knot text-white text-xl"></i>
                 </div>
-                <span class="text-2xl font-black tracking-tighter text-white italic">KNOT<span class="text-blue-500">.</span></span>
+                <span class="text-2xl font-black tracking-tighter text-white uppercase italic">KNOT<span class="text-indigo-500">.</span></span>
             </div>
-            
+
             <div class="flex items-center gap-6">
                 <div id="special-access" class="hidden">
-                    <a href="/management" class="bg-indigo-600/20 text-indigo-400 border border-indigo-500/30 px-4 py-2 rounded-xl text-[10px] font-black uppercase tracking-widest hover:bg-indigo-600 hover:text-white transition-all flex items-center gap-2">
+                    <a href="/management" class="bg-indigo-600/10 text-indigo-400 border border-indigo-500/20 px-4 py-2 rounded-xl text-[10px] font-black uppercase tracking-widest hover:bg-indigo-600 hover:text-white transition-all flex items-center gap-2">
                         <i class="fas fa-shield-halved"></i> Management Console
                     </a>
                 </div>
 
                 <div class="relative group">
-                    <button class="flex items-center gap-4 bg-slate-900/50 p-2 pr-4 rounded-2xl border border-white/5 hover:border-white/10 transition-all outline-none">
-                        <div class="w-10 h-10 rounded-xl bg-slate-800 flex items-center justify-center text-slate-400 border border-white/5 group-hover:text-blue-400 transition-colors">
+                    <button class="flex items-center gap-4 bg-slate-900/40 p-2 pr-4 rounded-2xl border border-white/5 hover:border-white/10 transition-all outline-none">
+                        <div class="w-10 h-10 rounded-xl bg-slate-800 flex items-center justify-center text-slate-400 border border-white/5">
                             <i class="fas fa-user-shield"></i>
                         </div>
                         <div class="text-left hidden sm:block leading-none">
                             <p id="userName" class="text-sm font-bold text-slate-100">Synchronizing...</p>
-                            <span id="userBadge" class="badge badge-student italic">Role</span>
+                            <span id="userBadge" class="role-badge badge-student italic">Profile</span>
                         </div>
                     </button>
                     <div class="absolute right-0 mt-3 w-56 bg-slate-900 border border-white/10 rounded-2xl shadow-2xl opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all z-50 p-2 overflow-hidden">
-                        <div class="px-4 py-3 border-b border-white/5 mb-2">
-                            <p id="userEmail" class="text-[10px] text-slate-500 font-bold uppercase tracking-wider truncate">email@its.edu.in</p>
+                        <div class="px-4 py-3 border-b border-white/5 mb-1">
+                            <p id="userEmail" class="text-[10px] text-slate-500 font-bold uppercase tracking-wider truncate">fetching...</p>
                         </div>
                         <button onclick="handleLogout()" class="w-full flex items-center gap-3 px-4 py-3 text-sm text-rose-400 hover:bg-rose-500/10 rounded-xl transition-all font-semibold">
-                            <i class="fas fa-power-off text-xs"></i> Secure Logout
+                            <i class="fas fa-power-off text-xs"></i> Secure Terminate
                         </button>
                     </div>
                 </div>
@@ -75,164 +98,160 @@
         </div>
     </nav>
 
-    <main class="max-w-7xl mx-auto w-full px-8 py-16 flex-1">
+    <main class="max-w-7xl mx-auto w-full px-6 py-12 md:py-20 flex-1 fade-in">
         
-        <header class="mb-16 fade-in">
-            <h1 class="text-5xl md:text-6xl font-black text-white tracking-tight mb-4 leading-tight">
-                Welcome, <span id="greetName" class="text-blue-500 underline decoration-blue-500/30 decoration-4 underline-offset-8">User</span>!
+        <header class="mb-16">
+            <h1 class="text-5xl md:text-7xl font-black text-white tracking-tighter mb-4 leading-none">
+                Hello, <span id="greetName" class="text-indigo-500">Verified User</span>!
             </h1>
-            <p class="text-slate-500 text-lg font-medium flex items-center gap-3 italic">
-                <i class="fas fa-university text-slate-700"></i>
-                ITS Engineering College • Campus Ecosystem Node
+            <p class="text-slate-500 text-lg font-medium flex items-center gap-3">
+                <i class="fas fa-server text-slate-700"></i>
+                ITS Engineering College • Active Ecosystem Hub
             </p>
         </header>
 
-        <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-16">
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-8 mb-16">
             
-            <a href="/resources" class="action-card group p-8 rounded-[40px] flex flex-col">
-                <div class="w-14 h-14 bg-blue-500/10 text-blue-500 rounded-2xl flex items-center justify-center mb-8 border border-blue-500/20 group-hover:scale-110 transition-transform">
-                    <i class="fas fa-building-circle-check text-2xl"></i>
+            <a href="/resources" class="action-card group p-10 flex flex-col">
+                <div class="w-16 h-16 bg-blue-600/10 text-blue-500 rounded-2xl flex items-center justify-center mb-8 border border-blue-500/20 group-hover:bg-blue-600 group-hover:text-white transition-all">
+                    <i class="fas fa-building-circle-check text-3xl"></i>
                 </div>
                 <h3 class="text-2xl font-bold text-white mb-2">Resource Hub</h3>
-                <p class="text-slate-400 text-sm leading-relaxed mb-6 font-medium">Verify live status of labs, smart classrooms, and halls via cryptographically secure QR lookup.</p>
+                <p class="text-slate-400 text-sm leading-relaxed mb-8">Access live occupancy data for labs and classrooms via institutional QR verified nodes.</p>
                 <div class="mt-auto text-blue-500 text-[10px] font-black uppercase tracking-widest flex items-center gap-2">
                     Enter Portal <i class="fas fa-chevron-right transition-transform group-hover:translate-x-2"></i>
                 </div>
             </a>
 
-            <a href="/marketplace" class="action-card group p-8 rounded-[40px] flex flex-col">
-                <div class="w-14 h-14 bg-emerald-500/10 text-emerald-500 rounded-2xl flex items-center justify-center mb-8 border border-emerald-500/20 group-hover:scale-110 transition-transform">
-                    <i class="fas fa-tags text-2xl"></i>
+            <a href="/marketplace" class="action-card group p-10 flex flex-col">
+                <div class="w-16 h-16 bg-emerald-500/10 text-emerald-500 rounded-2xl flex items-center justify-center mb-8 border border-emerald-500/20 group-hover:bg-emerald-500 group-hover:text-white transition-all">
+                    <i class="fas fa-shop text-3xl"></i>
                 </div>
                 <h3 class="text-2xl font-bold text-white mb-2">Marketplace</h3>
-                <p class="text-slate-400 text-sm leading-relaxed mb-6 font-medium">Institutional P2P economy for trading gear and books within the verified campus network.</p>
+                <p class="text-slate-400 text-sm leading-relaxed mb-8">Secure institutional economy for trading textbooks, hardware, and campus services.</p>
                 <div class="mt-auto text-emerald-500 text-[10px] font-black uppercase tracking-widest flex items-center gap-2">
-                    Trade Terminal <i class="fas fa-chevron-right transition-transform group-hover:translate-x-2"></i>
+                    Open Market <i class="fas fa-chevron-right transition-transform group-hover:translate-x-2"></i>
                 </div>
             </a>
 
-            <a href="/lost-found" class="action-card group p-8 rounded-[40px] flex flex-col">
-                <div class="w-14 h-14 bg-rose-500/10 text-rose-500 rounded-2xl flex items-center justify-center mb-8 border border-rose-500/20 group-hover:scale-110 transition-transform">
-                    <i class="fas fa-search-location text-2xl"></i>
+            <a href="/lost-found" class="action-card group p-10 flex flex-col">
+                <div class="w-16 h-16 bg-rose-500/10 text-rose-500 rounded-2xl flex items-center justify-center mb-8 border border-rose-500/20 group-hover:bg-rose-500 group-hover:text-white transition-all">
+                    <i class="fas fa-magnifying-glass-location text-3xl"></i>
                 </div>
                 <h3 class="text-2xl font-bold text-white mb-2">Recovery Ops</h3>
-                <p class="text-slate-400 text-sm leading-relaxed mb-6 font-medium">Report misplaced assets and manage found items with automated ownership verification.</p>
+                <p class="text-slate-400 text-sm leading-relaxed mb-8">Automated lost and found inventory with cryptographic ownership confirmation.</p>
                 <div class="mt-auto text-rose-500 text-[10px] font-black uppercase tracking-widest flex items-center gap-2">
-                    Open Ops <i class="fas fa-chevron-right transition-transform group-hover:translate-x-2"></i>
+                    Report Asset <i class="fas fa-chevron-right transition-transform group-hover:translate-x-2"></i>
                 </div>
             </a>
-
         </div>
 
-        <div class="bg-slate-900/20 border border-white/5 rounded-[40px] p-10">
-            <div class="flex flex-col md:flex-row md:items-center justify-between gap-6 mb-10">
+        <div class="bg-slate-900/20 border border-white/5 rounded-[3rem] p-8 md:p-12">
+            <div class="flex flex-col md:flex-row md:items-center justify-between gap-6 mb-12">
                 <div>
-                    <h4 class="text-xl font-bold text-white tracking-tight">Ecosystem Monitor</h4>
-                    <p class="text-xs text-slate-500 font-bold uppercase tracking-widest mt-1">Real-time Node Status</p>
+                    <h4 class="text-2xl font-bold text-white tracking-tight">System Monitor</h4>
+                    <p class="text-xs text-slate-500 font-black uppercase tracking-widest mt-1 italic">Real-time Telemetry Data</p>
                 </div>
-                <div id="live-indicator" class="flex items-center gap-3 px-4 py-2 bg-emerald-500/10 text-emerald-500 rounded-full text-[10px] font-black uppercase tracking-widest border border-emerald-500/20">
+                <div id="live-indicator" class="flex items-center gap-3 px-4 py-2 bg-emerald-500/10 text-emerald-500 rounded-full text-[10px] font-black uppercase tracking-[0.2em] border border-emerald-500/20">
                     <span class="w-2 h-2 bg-emerald-500 rounded-full animate-pulse"></span>
-                    Ecosystem Synchronized
+                    Node Online
                 </div>
             </div>
             
-            <div id="liveStatusContainer" class="space-y-4">
-                <div class="flex items-center justify-between p-6 bg-slate-950/50 rounded-3xl border border-white/5 shimmer">
-                    <div class="h-4 w-48 bg-slate-800 rounded"></div>
-                    <div class="h-4 w-20 bg-slate-800 rounded"></div>
-                </div>
+            <div id="liveStatusContainer" class="grid grid-cols-1 gap-4">
+                <div class="h-24 w-full bg-slate-950/50 rounded-[2rem] border border-white/5 shimmer"></div>
             </div>
         </div>
     </main>
 
     <footer class="px-8 py-12 border-t border-white/5 text-center">
-        <p class="text-slate-600 text-[10px] font-black uppercase tracking-[0.4em]">
-            &copy; 2026 KNOT BY NISO ECOSYSTEM | v2.0 Enterprise Release
+        <p class="text-slate-700 text-[10px] font-black uppercase tracking-[0.5em]">
+            KNOT OS v2.0 &bull; Engineered by Niso Ecosystem
         </p>
     </footer>
 
     <script>
-    const API_BASE = "https://apiknot.niksoriginals.in";
+        const API_BASE = "https://apiknot.niksoriginals.in";
 
-    async function fetchDashboard() {
-        try {
-            // 1. SYNC IDENTITY (Strict credentials included)
-            const profileRes = await fetch(`${API_BASE}/api/user-profile`, { credentials: 'include' });
-            
-            if (profileRes.status === 401) {
-                console.warn("Unauthorized Session. Redirecting...");
-                window.location.href = "/login";
-                return;
-            }
-
-            const profile = await profileRes.json();
-            if (profile.success) {
-                // Update UI Elements
-                document.getElementById('userName').innerText = profile.name;
-                document.getElementById('greetName').innerText = profile.name.split(' ')[0];
-                document.getElementById('userEmail').innerText = profile.email;
+        async function fetchDashboard() {
+            try {
+                // 1. Session & Identity Sync
+                const profileRes = await fetch(`${API_BASE}/api/user-profile`, { credentials: 'include' });
                 
-                // Badge Logic
-                const badge = document.getElementById('userBadge');
-                const role = profile.role.toLowerCase();
-                badge.innerText = role;
-                badge.className = `badge badge-${role}`;
-
-                // Management Authorization Check
-                if (['admin', 'hod', 'dean'].includes(role)) {
-                    document.getElementById('special-access').classList.remove('hidden');
+                if (profileRes.status === 401) {
+                    console.warn("Security Error: Invalid Session");
+                    window.location.href = "/login";
+                    return;
                 }
-            }
 
-            // 2. RESOURCE DATA SYNC
-            const statusRes = await fetch(`${API_BASE}/api/resource-status/1`, { credentials: 'include' });
-            const result = await statusRes.json();
-            
-            if (result.success) {
-                const data = result.data;
-                document.getElementById('liveStatusContainer').innerHTML = `
-                    <div class="flex items-center justify-between p-6 bg-slate-950/80 rounded-[2.5rem] border border-white/10 transition-all hover:border-blue-500/30">
-                        <div class="flex items-center gap-6">
-                            <div class="w-12 h-12 bg-slate-900 rounded-2xl flex items-center justify-center text-blue-500 border border-white/5 shadow-inner">
-                                <i class="fas fa-microchip"></i>
+                const profile = await profileRes.json();
+                if (profile && profile.success) {
+                    // Inject Identity
+                    document.getElementById('userName').innerText = profile.name;
+                    document.getElementById('greetName').innerText = profile.name ? profile.name.split(' ')[0] : "Verified";
+                    document.getElementById('userEmail').innerText = profile.email;
+                    
+                    // Role Rendering
+                    const badgeEl = document.getElementById('userBadge');
+                    const role = profile.role.toLowerCase();
+                    badgeEl.innerText = role;
+                    badgeEl.className = `role-badge badge-${role}`;
+
+                    // Authorization Gates
+                    const managementRoles = ['admin', 'hod', 'dean'];
+                    if (managementRoles.includes(role)) {
+                        document.getElementById('special-access').classList.remove('hidden');
+                    }
+                }
+
+                // 2. Real-time Node Monitoring
+                const statusRes = await fetch(`${API_BASE}/api/resource-status/1`, { credentials: 'include' });
+                const result = await statusRes.json();
+                
+                const statusContainer = document.getElementById('liveStatusContainer');
+                if (result.success && result.data) {
+                    const data = result.data;
+                    statusContainer.innerHTML = `
+                        <div class="flex items-center justify-between p-6 md:p-8 bg-slate-950/80 rounded-[2.5rem] border border-white/10 transition-all hover:border-indigo-500/40">
+                            <div class="flex items-center gap-6">
+                                <div class="w-14 h-14 bg-slate-900 rounded-2xl flex items-center justify-center text-indigo-500 border border-white/5 shadow-inner">
+                                    <i class="fas fa-microchip text-xl"></i>
+                                </div>
+                                <div>
+                                    <p class="text-xl font-bold text-white leading-tight">${data.name || 'System Hub'}</p>
+                                    <p class="text-[10px] text-slate-500 font-black uppercase tracking-[0.2em] mt-2">${data.type || 'Primary Resource'}</p>
+                                </div>
                             </div>
-                            <div>
-                                <p class="text-lg font-bold text-white leading-tight">${data.name}</p>
-                                <p class="text-[10px] text-slate-500 font-black uppercase tracking-[0.2em] mt-1">${data.type}</p>
+                            <div class="flex flex-col items-end gap-2">
+                                <span class="px-6 py-2 rounded-full text-[10px] font-black tracking-[0.2em] ${data.status === 'Available' ? 'bg-emerald-500/10 text-emerald-500 border border-emerald-500/20' : 'bg-rose-500/10 text-rose-500 border border-rose-500/20'}">
+                                    ${(data.status || 'OFFLINE').toUpperCase()}
+                                </span>
+                                ${data.occupied_by ? `<p class="text-[9px] text-slate-500 font-bold uppercase">Locked by: ${data.occupied_by}</p>` : ''}
                             </div>
-                        </div>
-                        <div class="text-right">
-                            <span class="px-5 py-2 rounded-full text-[10px] font-black tracking-[0.2em] ${data.status === 'Available' ? 'bg-emerald-500/10 text-emerald-500 border border-emerald-500/20' : 'bg-rose-500/10 text-rose-500 border border-rose-500/20'}">
-                                ${data.status.toUpperCase()}
-                            </span>
-                        </div>
-                    </div>`;
+                        </div>`;
+                }
+
+            } catch (err) {
+                console.error("Critical Sync Failure:", err);
+                const indicator = document.getElementById('live-indicator');
+                indicator.classList.replace('text-emerald-500', 'text-rose-500');
+                indicator.classList.replace('bg-emerald-500/10', 'bg-rose-500/10');
+                indicator.innerHTML = `<span class="w-2 h-2 bg-rose-500 rounded-full"></span> Connection Lost`;
             }
-        } catch (err) {
-            console.error("Dashboard Sync Error:", err);
-            const indicator = document.getElementById('live-indicator');
-            indicator.classList.replace('text-emerald-500', 'text-rose-500');
-            indicator.classList.replace('bg-emerald-500/10', 'bg-rose-500/10');
-            indicator.innerText = "System Sync Failure";
         }
-    }
 
-    async function handleLogout() {
-        if(!confirm("Securely terminate session?")) return;
-        try {
-            const res = await fetch(`${API_BASE}/auth/logout`, { 
-                method: 'POST', 
-                credentials: 'include' 
-            });
-            if (res.ok) window.location.href = "/login";
-        } catch (e) { 
-            console.error("Logout failed:", e);
-            window.location.href = "/login"; // Force redirect on error
+        async function handleLogout() {
+            if(!confirm("Terminate session and logout?")) return;
+            try {
+                await fetch(`${API_BASE}/auth/logout`, { method: 'POST', credentials: 'include' });
+                window.location.href = "/login";
+            } catch (e) {
+                console.error("Logout Error:", e);
+                window.location.href = "/login"; 
+            }
         }
-    }
 
-    // Initialize sync
-    window.onload = fetchDashboard;
+        window.onload = fetchDashboard;
     </script>
 </body>
 </html>
