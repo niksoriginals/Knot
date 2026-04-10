@@ -248,12 +248,11 @@
                     }
                     
                     window.location.href = targetUrl;
-                    return; // Short-circuit, allowing redirect to happen while loader is still visible
+                    return; 
                 }
             } catch (err) {
                 console.log("No existing session detected.");
             }
-            // Drop loader to expose login forms if no session exists or network error
             toggleLoader(false);
         }
 
