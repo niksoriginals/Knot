@@ -149,43 +149,44 @@ def verify_otp():
     email = data.get("email")
     user_otp = data.get("otp")
 
-    if user_otp == "123456":
-        session["user"] = email
-        conn = get_db()
-        user = conn.execute("SELECT name FROM users WHERE email = ?", (email,)).fetchone()
-        conn.close()
-        is_new = True if not user or not user['name'] else False
+    conn = get_db()
+    user = conn.execute("SELECT name, role FROM users WHERE email = ?", (email,)).fetchone()
+    conn.close()
+
+
+    def finalize_login(email_addr, db_user):
+        session["user"] = email_addr
+        session.permanent = True
+        
+        if db_user:
+            session["user_role"] = db_user['role']
+
+            if db_user['role'] == 'admin':
+                session["admin"] = True
+        else:
+            session["user_role"] = "student"
+            
+        is_new = True if not db_user or not db_user['name'] else False
         return jsonify({"success": True, "is_new_user": is_new})
 
-    # 2. Real OTP Check
+    if user_otp == "123456":
+        return finalize_login(email, user)
+    
     conn = get_db()
     res = conn.execute("SELECT otp_code, expiry FROM otps WHERE email = ?", (email,)).fetchone()
     conn.close()
 
     if res:
         expiry_dt = datetime.strptime(res['expiry'], '%Y-%m-%d %H:%M:%S')
-        
         if res['otp_code'] == user_otp and datetime.now() < expiry_dt:
-            conn = get_db()
-            
-           
-            user = conn.execute("SELECT name FROM users WHERE email = ?", (email,)).fetchone()
-            
-            is_new = False
             if not user:
-                conn.execute("INSERT INTO users (email) VALUES (?)", (email,))
-                is_new = True
-            elif not user['name'] or user['name'].strip() == "":
-                is_new = True
+                conn = get_db()
+                conn.execute("INSERT INTO users (email, role) VALUES (?, 'student')", (email,))
+                conn.commit()
+                conn.close()
             
-            conn.commit()
-            conn.close()
-            
-            session["user"] = email
-            session.permanent = True
-            
-            print(f">>> [AUTH] User {email} verified. New User: {is_new}")
-            return jsonify({"success": True, "is_new_user": is_new})
+            print(f">>> [AUTH] User {email} verified successfully.")
+            return finalize_login(email, user)
     
     return jsonify({"error": "Invalid or expired OTP"}), 401
 
@@ -280,9 +281,22 @@ def debug_db_viewer():
 def admin_required(f):
     @wraps(f)
     def decorated_function(*args, **kwargs):
-        if not session.get("admin"):
-            return jsonify({"error": "Unauthorized: Admin login required"}), 403
-        return f(*args, **kwargs)
+        user_email = session.get("user")
+        
+        if not user_email:
+            return jsonify({"error": "Session Expired. Please login again."}), 401
+            
+        try:
+            conn = get_db()
+            user = conn.execute("SELECT role FROM users WHERE email = ?", (user_email,)).fetchone()
+            conn.close()
+            if not user or user['role'].lower() != 'admin':
+                return jsonify({"error": "Access Denied: Admin clearance required"}), 403
+                
+            return f(*args, **kwargs)
+        except Exception as e:
+            return jsonify({"error": "Security Check Failed"}), 500
+            
     return decorated_function
 
 
@@ -402,6 +416,8 @@ def get_dashboard_stats():
     ''').fetchall()
     conn.close()
     return jsonify({"counts": stats, "usage": [dict(r) for r in usage]})
+
+
 
 @app.route("/admin/resources/delete/<int:res_id>", methods=["DELETE"])
 @admin_required
