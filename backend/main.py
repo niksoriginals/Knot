@@ -470,14 +470,33 @@ def admin_delete_market(item_id):
     return jsonify({"success": True, "message": "Ad removed by admin"})   
 
 # --- RESOURCE API: FETCH ALL ---
+
 @app.route("/api/resources", methods=["GET"])
 def get_all_resources():
     try:
-        conn = get_db()
-        resources = conn.execute("SELECT * FROM resources").fetchall()
-        conn.close()
-        return jsonify([dict(r) for r in resources])
+        now = datetime.now().strftime('%Y-%m-%dT%H:%M')
+        
+        with get_db() as conn:
+            occupied_nodes = conn.execute("SELECT id FROM resources WHERE status = 'Occupied'").fetchall()
+            
+            for node in occupied_nodes:
+                res_id = node['id']
+                latest_booking = conn.execute('''
+                    SELECT end_time FROM bookings 
+                    WHERE resource_id = ? AND status = 'Confirmed' 
+                    ORDER BY end_time DESC LIMIT 1
+                ''', (res_id,)).fetchone()
+
+                if latest_booking and now > latest_booking['end_time']:
+                    conn.execute("UPDATE resources SET status = 'Available' WHERE id = ?", (res_id,))
+                    print(f">>> [AUTO-RELEASE] Node {res_id} expired and set to Available.")
+            
+            conn.commit()
+            resources = conn.execute("SELECT * FROM resources").fetchall()
+            return jsonify([dict(r) for r in resources])
+            
     except Exception as e:
+        print(f"!!! [LIST ERROR] {e}")
         return jsonify({"error": str(e)}), 500
 
 # --- RESOURCE API: BOOKING ---
