@@ -192,6 +192,7 @@ def verify_otp():
 @app.route("/api/update-profile", methods=["POST"])
 def update_profile():
     email = session.get("user")
+    print(f">>> [DEBUG] Attempting update for session user: {email}")
     
     if not email:
         return jsonify({"error": "Unauthorized session"}), 401
@@ -205,21 +206,27 @@ def update_profile():
 
     try:
         conn = get_db()
-        conn.execute('''
-            UPDATE users 
-            SET name = ?, department = ? 
-            WHERE email = ?
-        ''', (new_name, new_dept, email))
+        user = conn.execute("SELECT email FROM users WHERE email = ?", (email,)).fetchone()
+        
+        if not user:
+            conn.execute("INSERT INTO users (email, name, department) VALUES (?, ?, ?)", 
+                         (email, new_name, new_dept))
+        else:
+            conn.execute('''
+                UPDATE users 
+                SET name = ?, department = ? 
+                WHERE email = ?
+            ''', (new_name, new_dept, email))
         
         conn.commit()
         conn.close()
         
-        print(f">>> [PROFILE UPDATE] {email} updated their info.")
-        return jsonify({"success": True, "message": "Profile updated successfully"})
+        print(f">>> [SUCCESS] {email} profile synced to DB.")
+        return jsonify({"success": True})
     
     except Exception as e:
-        print(f"!!! [UPDATE ERROR] {e}")
-        return jsonify({"error": "Internal Server Error"}), 500
+        print(f"!!! [DATABASE ERROR] {e}")
+        return jsonify({"error": str(e)}), 500
     
 
 @app.route("/api/user-profile", methods=["GET"])
