@@ -219,8 +219,7 @@
                 class="hidden absolute inset-0 bg-slate-950/90 backdrop-blur-xl rounded-[2.5rem] z-50 flex flex-col items-center justify-center">
                 <div class="w-10 h-10 border-4 border-indigo-500/20 border-t-indigo-500 rounded-full animate-spin">
                 </div>
-                <p class="text-[10px] text-indigo-400 mt-4 font-black uppercase tracking-[0.3em] animate-pulse">Session
-                    Handshake</p>
+                <p class="text-[10px] text-indigo-400 mt-4 font-black uppercase tracking-[0.3em] animate-pulse">Session Handshake</p>
             </div>
         </div>
     </div>
@@ -229,6 +228,34 @@
         const API_BASE = "https://apiknot.niksoriginals.in";
         const DASHBOARD_URL = "/dashboard";
         let timerInterval;
+
+        // --- SESSION VERIFICATION ON LOAD ---
+        window.addEventListener('DOMContentLoaded', checkSession);
+
+        async function checkSession() {
+            toggleLoader(true);
+            try {
+                const res = await fetch(`${API_BASE}/api/user-profile`, { credentials: 'include' });
+                // If response is good, the user's session cookie is valid
+                if (res.ok) {
+                    const profData = await res.json();
+                    let targetUrl = "/dashboard";
+                    
+                    if (profData && profData.role) {
+                        const role = profData.role.toLowerCase();
+                        if (role === 'admin') targetUrl = "/admin";
+                        else if (role === 'hod' || role === 'dean') targetUrl = "/admin"; 
+                    }
+                    
+                    window.location.href = targetUrl;
+                    return; // Short-circuit, allowing redirect to happen while loader is still visible
+                }
+            } catch (err) {
+                console.log("No existing session detected.");
+            }
+            // Drop loader to expose login forms if no session exists or network error
+            toggleLoader(false);
+        }
 
         // --- TOAST SYSTEM ---
         function showToast(msg, type = 'info') {
@@ -288,6 +315,8 @@
                     if (data.is_new_user) {
                         showSection('name-section');
                         showToast("Identity Verified!", "success");
+                        toggleLoader(false); // Only drop loader if they need to finish setup
+                        return;
                     } else {
                         showToast("Access Granted!", "success");
                         const profRes = await fetch(`${API_BASE}/api/user-profile`, { credentials: 'include' });
@@ -300,6 +329,7 @@
                         else if (role === 'hod' || role === 'dean') targetUrl = "/admin";
 
                         setTimeout(() => window.location.href = targetUrl, 500);
+                        return; // Keep loader active during redirect
                     }
                 } else {
                     showToast(data.error || "Invalid Code", "error");
@@ -327,7 +357,6 @@
                 if (res.ok) {
                     showToast("Profile Initialized!", "success");
 
-                    
                     const profRes = await fetch(`${API_BASE}/api/user-profile`, { credentials: 'include' });
                     const profData = await profRes.json();
 
@@ -340,6 +369,7 @@
                     setTimeout(() => {
                         window.location.href = targetUrl;
                     }, 1000);
+                    return; // Keep loader active during redirect
                 } else {
                     showToast("Update failed", "error");
                 }
