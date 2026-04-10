@@ -17,12 +17,10 @@ app.secret_key = os.getenv("FLASK_SECRET", "NISO_KNOT_2026_SECURE")
 
 app.config.update(
     SESSION_COOKIE_HTTPONLY=True,
-    SESSION_COOKIE_SAMESITE="None", 
+    SESSION_COOKIE_SAMESITE="None",
     SESSION_COOKIE_SECURE=True,    
-    PERMANENT_SESSION_LIFETIME=timedelta(hours=8),
-    SESSION_COOKIE_DOMAIN=".niksoriginals.in" 
+    PERMANENT_SESSION_LIFETIME=timedelta(hours=8)
 )
-
 
 CORS(app, supports_credentials=True, origins=[
     "https://knot.niksoriginals.in",
@@ -151,13 +149,11 @@ def verify_otp():
     email = data.get("email")
     user_otp = data.get("otp")
 
-    # 1. Demo Bypass (Isme bhi logic rakhte hain taaki demo smooth chale)
     if user_otp == "123456":
         session["user"] = email
         conn = get_db()
         user = conn.execute("SELECT name FROM users WHERE email = ?", (email,)).fetchone()
         conn.close()
-        # Agar user bypass se aa raha hai aur DB mein nahi hai, toh onboarding dikhao
         is_new = True if not user or not user['name'] else False
         return jsonify({"success": True, "is_new_user": is_new})
 
@@ -172,16 +168,14 @@ def verify_otp():
         if res['otp_code'] == user_otp and datetime.now() < expiry_dt:
             conn = get_db()
             
-            # Check if user exists and has a name
+           
             user = conn.execute("SELECT name FROM users WHERE email = ?", (email,)).fetchone()
             
             is_new = False
             if not user:
-                # First time entry
                 conn.execute("INSERT INTO users (email) VALUES (?)", (email,))
                 is_new = True
             elif not user['name'] or user['name'].strip() == "":
-                # Email exist karti hai par naam missing hai
                 is_new = True
             
             conn.commit()

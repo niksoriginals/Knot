@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -8,7 +9,13 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap');
-        body { font-family: 'Plus Jakarta Sans', sans-serif; background: #020617; color: #f8fafc; overflow: hidden; }
+
+        body {
+            font-family: 'Plus Jakarta Sans', sans-serif;
+            background: #020617;
+            color: #f8fafc;
+            overflow: hidden;
+        }
 
         .auth-card {
             background: rgba(15, 23, 42, 0.4);
@@ -34,33 +41,91 @@
             transition: all 0.3s ease;
         }
 
-        .btn-primary:hover:not(:disabled) { transform: translateY(-1px); box-shadow: 0 10px 25px -5px rgba(99, 102, 241, 0.4); }
-        .btn-primary:disabled { opacity: 0.6; cursor: not-allowed; }
+        .btn-primary:hover:not(:disabled) {
+            transform: translateY(-1px);
+            box-shadow: 0 10px 25px -5px rgba(99, 102, 241, 0.4);
+        }
+
+        .btn-primary:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+        }
 
         /* Toast Notification Styling */
-        #toast-container { position: fixed; top: 1.5rem; right: 1.5rem; z-index: 9999; }
-        .toast {
-            background: #1e293b; border-left: 4px solid #6366f1;
-            padding: 1rem 1.5rem; border-radius: 0.75rem; box-shadow: 0 10px 15px -3px rgba(0,0,0,0.4);
-            margin-bottom: 0.75rem; animation: slideIn 0.3s ease-out forwards;
-            display: flex; align-items: center; gap: 0.75rem; min-width: 300px;
+        #toast-container {
+            position: fixed;
+            top: 1.5rem;
+            right: 1.5rem;
+            z-index: 9999;
         }
-        @keyframes slideIn { from { transform: translateX(100%); opacity: 0; } to { transform: translateX(0); opacity: 1; } }
-        .toast.error { border-left-color: #ef4444; }
-        .toast.success { border-left-color: #10b981; }
 
-        .fade-in { animation: fadeIn 0.5s ease-out; }
-        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
-        
-        select { appearance: none; background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 24 24' stroke='%2394a3b8'%3E%3Cpath stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='M19 9l-7 7-7-7'%3E%3C/path%3E%3C/svg%3E"); background-repeat: no-repeat; background-position: right 1rem center; background-size: 1.2em; }
+        .toast {
+            background: #1e293b;
+            border-left: 4px solid #6366f1;
+            padding: 1rem 1.5rem;
+            border-radius: 0.75rem;
+            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.4);
+            margin-bottom: 0.75rem;
+            animation: slideIn 0.3s ease-out forwards;
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            min-width: 300px;
+        }
+
+        @keyframes slideIn {
+            from {
+                transform: translateX(100%);
+                opacity: 0;
+            }
+
+            to {
+                transform: translateX(0);
+                opacity: 1;
+            }
+        }
+
+        .toast.error {
+            border-left-color: #ef4444;
+        }
+
+        .toast.success {
+            border-left-color: #10b981;
+        }
+
+        .fade-in {
+            animation: fadeIn 0.5s ease-out;
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(10px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        select {
+            appearance: none;
+            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 24 24' stroke='%2394a3b8'%3E%3Cpath stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='M19 9l-7 7-7-7'%3E%3C/path%3E%3C/svg%3E");
+            background-repeat: no-repeat;
+            background-position: right 1rem center;
+            background-size: 1.2em;
+        }
     </style>
 </head>
+
 <body class="min-h-screen flex items-center justify-center p-6 relative">
-    
+
     <div id="toast-container"></div>
 
     <div class="absolute top-[-10%] left-[-10%] w-[500px] h-[500px] bg-indigo-600/10 rounded-full blur-[120px]"></div>
-    <div class="absolute bottom-[-10%] right-[-10%] w-[500px] h-[500px] bg-purple-600/10 rounded-full blur-[120px]"></div>
+    <div class="absolute bottom-[-10%] right-[-10%] w-[500px] h-[500px] bg-purple-600/10 rounded-full blur-[120px]">
+    </div>
 
     <div class="max-w-[420px] w-full relative z-10">
         <div class="text-center mb-10 fade-in">
@@ -72,7 +137,7 @@
         </div>
 
         <div class="auth-card p-10 rounded-[2.5rem] fade-in">
-            
+
             <div id="email-section" class="space-y-8">
                 <div class="space-y-1">
                     <h2 class="text-2xl font-bold text-white tracking-tight">Identity</h2>
@@ -82,12 +147,14 @@
                 <div class="space-y-4">
                     <div class="input-group flex items-center rounded-2xl p-4">
                         <i class="far fa-envelope text-slate-500 mr-4"></i>
-                        <input type="email" id="email" placeholder="name@its.edu.in" 
+                        <input type="email" id="email" placeholder="name@its.edu.in"
                             class="bg-transparent w-full outline-none text-white text-base placeholder-slate-700">
                     </div>
-                    <button onclick="sendOTP()" id="btn-send" class="btn-primary w-full py-4 rounded-2xl text-white font-bold text-base flex items-center justify-center group">
+                    <button onclick="sendOTP()" id="btn-send"
+                        class="btn-primary w-full py-4 rounded-2xl text-white font-bold text-base flex items-center justify-center group">
                         <span>Get Code</span>
-                        <i class="fas fa-chevron-right ml-2 text-[10px] group-hover:translate-x-1 transition-transform"></i>
+                        <i
+                            class="fas fa-chevron-right ml-2 text-[10px] group-hover:translate-x-1 transition-transform"></i>
                     </button>
                 </div>
             </div>
@@ -95,18 +162,22 @@
             <div id="otp-section" class="hidden space-y-8">
                 <div class="text-center space-y-1">
                     <h2 class="text-2xl font-bold text-white">Verification</h2>
-                    <p class="text-slate-400 text-xs truncate px-2">Sent to <span id="display-email" class="text-indigo-400 font-bold"></span></p>
+                    <p class="text-slate-400 text-xs truncate px-2">Sent to <span id="display-email"
+                            class="text-indigo-400 font-bold"></span></p>
                 </div>
-                
+
                 <div class="space-y-6">
                     <div class="input-group rounded-2xl p-4">
-                        <input type="text" id="otp" maxlength="6" placeholder="000000" 
+                        <input type="text" id="otp" maxlength="6" placeholder="000000"
                             class="bg-transparent w-full text-center text-4xl tracking-[1rem] font-black text-indigo-400 outline-none placeholder-slate-800">
                     </div>
-                    <button onclick="verifyOTP()" id="btn-verify" class="btn-primary w-full py-4 rounded-2xl text-white font-bold text-base">Verify Identity</button>
+                    <button onclick="verifyOTP()" id="btn-verify"
+                        class="btn-primary w-full py-4 rounded-2xl text-white font-bold text-base">Verify
+                        Identity</button>
                     <div class="flex justify-between items-center text-[11px] px-2 font-bold uppercase tracking-wider">
                         <button onclick="resetFlow()" class="text-slate-500 hover:text-white">Edit Email</button>
-                        <p id="resend-timer" class="text-indigo-500 cursor-pointer" onclick="handleResend()">Resend 00:59</p>
+                        <p id="resend-timer" class="text-indigo-500 cursor-pointer" onclick="handleResend()">Resend
+                            00:59</p>
                     </div>
                 </div>
             </div>
@@ -118,15 +189,19 @@
                 </div>
                 <div class="space-y-5">
                     <div class="space-y-2">
-                        <label class="text-[10px] font-black text-slate-500 uppercase tracking-widest ml-1">Full Name</label>
+                        <label class="text-[10px] font-black text-slate-500 uppercase tracking-widest ml-1">Full
+                            Name</label>
                         <div class="input-group flex items-center rounded-2xl p-4">
                             <i class="far fa-user text-slate-500 mr-4"></i>
-                            <input type="text" id="fullname" placeholder="John Doe" class="bg-transparent w-full outline-none text-white">
+                            <input type="text" id="fullname" placeholder="John Doe"
+                                class="bg-transparent w-full outline-none text-white">
                         </div>
                     </div>
                     <div class="space-y-2">
-                        <label class="text-[10px] font-black text-slate-500 uppercase tracking-widest ml-1">Department</label>
-                        <select id="dept-select" class="input-group w-full rounded-2xl px-5 py-4 outline-none text-slate-300 font-medium">
+                        <label
+                            class="text-[10px] font-black text-slate-500 uppercase tracking-widest ml-1">Department</label>
+                        <select id="dept-select"
+                            class="input-group w-full rounded-2xl px-5 py-4 outline-none text-slate-300 font-medium">
                             <option value="" disabled selected>Choose Branch</option>
                             <option value="CSE">Computer Science</option>
                             <option value="IT">Information Tech</option>
@@ -134,13 +209,17 @@
                             <option value="ME">Mechanical</option>
                         </select>
                     </div>
-                    <button onclick="updateProfile()" id="btn-finish" class="btn-primary w-full py-4 rounded-2xl text-white font-bold text-base">Finish Setup</button>
+                    <button onclick="updateProfile()" id="btn-finish"
+                        class="btn-primary w-full py-4 rounded-2xl text-white font-bold text-base">Finish Setup</button>
                 </div>
             </div>
 
-            <div id="loader" class="hidden absolute inset-0 bg-slate-950/90 backdrop-blur-xl rounded-[2.5rem] z-50 flex flex-col items-center justify-center">
-                <div class="w-10 h-10 border-4 border-indigo-500/20 border-t-indigo-500 rounded-full animate-spin"></div>
-                <p class="text-[10px] text-indigo-400 mt-4 font-black uppercase tracking-[0.3em] animate-pulse">Session Handshake</p>
+            <div id="loader"
+                class="hidden absolute inset-0 bg-slate-950/90 backdrop-blur-xl rounded-[2.5rem] z-50 flex flex-col items-center justify-center">
+                <div class="w-10 h-10 border-4 border-indigo-500/20 border-t-indigo-500 rounded-full animate-spin">
+                </div>
+                <p class="text-[10px] text-indigo-400 mt-4 font-black uppercase tracking-[0.3em] animate-pulse">Session
+                    Handshake</p>
             </div>
         </div>
     </div>
@@ -171,7 +250,7 @@
         async function sendOTP() {
             const email = document.getElementById('email').value;
             if (!email.endsWith("@its.edu.in")) return showToast("Use your college email ID!", "error");
-            
+
             toggleLoader(true);
             try {
                 const res = await fetch(`${API_BASE}/auth/send-otp`, {
@@ -192,27 +271,32 @@
         async function verifyOTP() {
             const email = document.getElementById('email').value;
             const otp = document.getElementById('otp').value;
-            if(otp.length < 6) return showToast("Enter 6-digit code", "error");
+            if (otp.length < 6) return showToast("Enter 6-digit code", "error");
 
             toggleLoader(true);
             try {
                 const res = await fetch(`${API_BASE}/auth/verify-otp`, {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
-                    credentials: 'include', 
+                    credentials: 'include', // <--- YE COOKIE SAVE KAREGA
                     body: JSON.stringify({ email, otp })
                 });
                 const data = await res.json();
+
                 if (res.ok) {
                     if (data.is_new_user) {
                         showSection('name-section');
-                        showToast("Verification successful!", "success");
+                        showToast("Identity Verified!", "success");
                     } else {
-                        showToast("Logging you in...", "success");
-                        setTimeout(() => window.location.href = DASHBOARD_URL, 800);
+                        showToast("Access Granted!", "success");
+                        setTimeout(() => window.location.href = DASHBOARD_URL, 500);
                     }
-                } else { showToast(data.error || "Invalid OTP", "error"); }
-            } catch (err) { showToast("Verification error.", "error"); }
+                } else {
+                    showToast(data.error || "Invalid Code", "error");
+                }
+            } catch (err) {
+                showToast("Backend connection failed.", "error");
+            }
             toggleLoader(false);
         }
 
@@ -253,4 +337,5 @@
         function resetFlow() { showSection('email-section'); clearInterval(timerInterval); }
     </script>
 </body>
+
 </html>
