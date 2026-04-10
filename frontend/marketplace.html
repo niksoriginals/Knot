@@ -1,127 +1,136 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Knot | Campus Marketplace</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>KNOT | Ecosystem Marketplace</title>
     <script src="https://cdn.tailwindcss.com"></script>
-    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;700;800&display=swap');
+        body { font-family: 'Plus Jakarta Sans', sans-serif; background-color: #020617; color: #f8fafc; }
+        .glass-panel { background: rgba(15, 23, 42, 0.4); backdrop-filter: blur(20px); border: 1px solid rgba(255, 255, 255, 0.05); }
+        .market-card { transition: all 0.3s ease; }
+        .market-card:hover { border-color: #8b5cf6; transform: translateY(-2px); }
+    </style>
 </head>
-<body class="bg-slate-50 text-slate-900">
+<body class="min-h-screen">
 
-    <nav class="bg-white/80 backdrop-blur-md border-b border-slate-200 sticky top-0 z-50 px-6 py-4">
+    <nav class="sticky top-0 z-50 bg-slate-950/80 backdrop-blur-md border-b border-white/5 px-8 py-4">
         <div class="max-w-7xl mx-auto flex justify-between items-center">
-            <a href="/" class="flex items-center gap-2 text-xl font-bold text-blue-600">
-                <div class="w-8 h-8 bg-blue-600 rounded-lg flex items-center justify-center text-white text-sm">K</div>
-                Knot
-            </a>
-            <div class="flex gap-4">
-                <button onclick="openPostModal()" class="px-4 py-2 bg-blue-600 text-white rounded-xl font-bold text-sm hover:shadow-lg transition">
-                    + Post Item
-                </button>
+            <div class="flex items-center gap-4 cursor-pointer" onclick="location.href='/dashboard'">
+                <div class="w-9 h-9 bg-violet-600 rounded-xl flex items-center justify-center shadow-lg text-white font-bold italic">K</div>
+                <span class="text-xl font-black tracking-tighter uppercase italic">KNOT <span class="text-violet-500 text-sm">Market</span></span>
             </div>
+            <button onclick="openPostModal()" class="bg-violet-600 hover:bg-violet-500 px-5 py-2 rounded-xl text-xs font-black uppercase tracking-widest transition-all">List Item</button>
         </div>
     </nav>
 
-    <header class="max-w-7xl mx-auto px-6 py-10">
-        <div class="flex flex-col md:flex-row justify-between items-end gap-6">
-            <div>
-                <h1 class="text-4xl font-black mb-2">Campus <span class="text-blue-600">Market</span></h1>
-                <p class="text-slate-500">Buy, sell, trade, or find lost items within I.T.S College.</p>
-            </div>
-            <div class="flex bg-white p-1 rounded-2xl border border-slate-200 shadow-sm">
-                <button class="px-6 py-2 bg-blue-600 text-white rounded-xl font-bold text-sm">All</button>
-                <button class="px-6 py-2 text-slate-500 hover:text-blue-600 font-bold text-sm">Lost/Found</button>
-                <button class="px-6 py-2 text-slate-500 hover:text-blue-600 font-bold text-sm">Buy/Sell</button>
-                <button class="px-6 py-2 text-slate-500 hover:text-blue-600 font-bold text-sm">Services</button>
-            </div>
-        </div>
-    </header>
+    <main class="max-w-5xl mx-auto px-8 py-12">
+        <header class="mb-12">
+            <h1 class="text-4xl font-black text-white tracking-tight mb-2">Ecosystem Marketplace</h1>
+            <p class="text-slate-500 font-medium italic">Buy, sell, or trade assets within the KNOT network operatives.</p>
+        </header>
 
-    <main class="max-w-7xl mx-auto px-6 pb-20">
-        <div class="grid md:grid-cols-4 gap-6">
-            
-            <div class="bg-white rounded-2xl overflow-hidden border border-slate-200 hover:shadow-xl transition-all duration-300 group">
-                <div class="h-48 bg-slate-200 relative">
-                    <span class="absolute top-3 left-3 px-3 py-1 bg-red-500 text-white text-[10px] font-bold rounded-lg uppercase tracking-wider">Lost</span>
-                    <img src="https://images.unsplash.com/photo-1588872657578-7efd1f1555ed?w=500" class="w-full h-full object-cover group-hover:scale-105 transition">
-                </div>
-                <div class="p-5">
-                    <h3 class="font-bold text-lg mb-1">Dell Laptop Charger</h3>
-                    <p class="text-slate-500 text-xs mb-4"><i class="fas fa-map-marker-alt mr-1"></i> Library, 2nd Floor</p>
-                    <div class="flex justify-between items-center">
-                        <span class="text-blue-600 font-bold text-sm">Reward: ₹200</span>
-                        <button class="px-3 py-2 bg-slate-100 hover:bg-blue-100 text-blue-600 rounded-lg text-xs font-bold transition">Contact</button>
-                    </div>
-                </div>
-            </div>
-
-            <div class="bg-white rounded-2xl overflow-hidden border border-slate-200 hover:shadow-xl transition-all duration-300 group">
-                <div class="h-48 bg-slate-200 relative">
-                    <span class="absolute top-3 left-3 px-3 py-1 bg-green-600 text-white text-[10px] font-bold rounded-lg uppercase tracking-wider">For Sale</span>
-                    <img src="https://images.unsplash.com/photo-1544652478-6653e09f18a2?w=500" class="w-full h-full object-cover group-hover:scale-105 transition">
-                </div>
-                <div class="p-5">
-                    <h3 class="font-bold text-lg mb-1">Scientific Calculator</h3>
-                    <p class="text-slate-500 text-xs mb-4"><i class="fas fa-user mr-1"></i> Posted by Aryan</p>
-                    <div class="flex justify-between items-center">
-                        <span class="text-slate-900 font-black text-lg">₹450</span>
-                        <button class="px-3 py-2 bg-blue-600 text-white rounded-lg text-xs font-bold transition">Buy Now</button>
-                    </div>
-                </div>
-            </div>
-
-            <div class="bg-white rounded-2xl overflow-hidden border border-slate-200 hover:shadow-xl transition-all duration-300 group">
-                <div class="h-48 bg-blue-600 flex items-center justify-center text-white text-4xl p-6 text-center italic font-serif">
-                    "Python Help"
-                </div>
-                <div class="p-5">
-                    <span class="px-3 py-1 bg-purple-100 text-purple-700 text-[10px] font-bold rounded-lg uppercase mb-2 inline-block">Service/Trade</span>
-                    <h3 class="font-bold text-lg mb-1">Web Dev Tutoring</h3>
-                    <p class="text-slate-500 text-xs mb-4">Trading for Maths notes.</p>
-                    <button class="w-full py-2 border-2 border-blue-600 text-blue-600 rounded-lg text-xs font-bold hover:bg-blue-600 hover:text-white transition">Chat to Trade</button>
-                </div>
-            </div>
-
+        <div id="marketplace-feed" class="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <div class="col-span-full p-20 text-center text-slate-600 animate-pulse">Syncing Marketplace Ledger...</div>
         </div>
     </main>
 
-    <div id="postModal" class="fixed inset-0 bg-slate-900/50 backdrop-blur-sm hidden items-center justify-center z-[100] p-6">
-        <div class="bg-white w-full max-w-lg rounded-3xl p-8 shadow-2xl">
-            <h2 class="text-2xl font-bold mb-6">List an <span class="text-blue-600">Item</span></h2>
-            <form class="space-y-4">
-                <div class="grid grid-cols-2 gap-4">
-                    <div>
-                        <label class="block text-sm font-semibold mb-1">Type</label>
-                        <select class="w-full p-3 border rounded-xl outline-none focus:ring-2 focus:ring-blue-400">
-                            <option>Lost</option>
-                            <option>Found</option>
-                            <option>Sell</option>
-                            <option>Service/Trade</option>
-                        </select>
-                    </div>
-                    <div>
-                        <label class="block text-sm font-semibold mb-1">Price/Reward</label>
-                        <input type="text" placeholder="e.g. 500" class="w-full p-3 border rounded-xl outline-none">
-                    </div>
+    <div id="post-modal" class="fixed inset-0 bg-black/90 backdrop-blur-sm hidden flex items-center justify-center z-[100] p-6">
+        <div class="glass-panel p-8 w-full max-w-md rounded-[2.5rem] border-t-2 border-violet-500">
+            <h3 class="text-2xl font-black mb-6 uppercase italic">Create New Listing</h3>
+            <div class="space-y-4">
+                <div>
+                    <label class="text-[9px] font-black uppercase text-slate-500 ml-1">Listing Type</label>
+                    <select id="post-type" class="w-full bg-slate-900 border border-white/10 p-4 rounded-2xl text-white outline-none focus:border-violet-500 mt-1">
+                        <option value="Sell">For Sale (Price inside)</option>
+                        <option value="Trade">Barter / Trade</option>
+                    </select>
                 </div>
                 <div>
-                    <label class="block text-sm font-semibold mb-1">Item Title</label>
-                    <input type="text" placeholder="What are you listing?" class="w-full p-3 border rounded-xl outline-none">
+                    <label class="text-[9px] font-black uppercase text-slate-500 ml-1">Item / Service Title</label>
+                    <input type="text" id="post-title" placeholder="Ex: Calculus Book or Arduino Kit" class="w-full bg-slate-900 border border-white/10 p-4 rounded-2xl text-white outline-none focus:border-violet-500 mt-1">
                 </div>
                 <div>
-                    <label class="block text-sm font-semibold mb-1">Description</label>
-                    <textarea rows="3" class="w-full p-3 border rounded-xl outline-none"></textarea>
+                    <label class="text-[9px] font-black uppercase text-slate-500 ml-1">Description & Pricing</label>
+                    <textarea id="post-desc" rows="3" placeholder="Condition? Price? Exchange for what?" class="w-full bg-slate-900 border border-white/10 p-4 rounded-2xl text-white outline-none focus:border-violet-500 mt-1"></textarea>
                 </div>
-                <button type="submit" class="w-full py-4 bg-blue-600 text-white rounded-2xl font-bold hover:bg-blue-700 transition">Post Listing</button>
-                <button type="button" onclick="closePostModal()" class="w-full text-slate-400 text-sm">Cancel</button>
-            </form>
+                <div class="flex gap-3 pt-4">
+                    <button onclick="closePostModal()" class="flex-1 text-slate-500 font-bold uppercase text-[10px]">Abort</button>
+                    <button onclick="submitPost()" class="flex-[2] bg-violet-600 py-4 rounded-2xl font-black text-xs uppercase tracking-widest shadow-xl shadow-violet-600/20">Authorize Broadcast</button>
+                </div>
+            </div>
         </div>
     </div>
 
     <script>
-        function openPostModal() { document.getElementById('postModal').classList.remove('hidden'); document.getElementById('postModal').classList.add('flex'); }
-        function closePostModal() { document.getElementById('postModal').classList.add('hidden'); document.getElementById('postModal').classList.remove('flex'); }
+        const API_BASE = "https://apiknot.niksoriginals.in";
+
+        function openPostModal() { document.getElementById('post-modal').classList.remove('hidden'); }
+        function closePostModal() { document.getElementById('post-modal').classList.add('hidden'); }
+
+        async function fetchFeed() {
+            try {
+                // Requesting only Sell/Trade items via category filter
+                const res = await fetch(`${API_BASE}/api/marketplace?category=market`, { credentials: 'include' });
+                const items = await res.json();
+                renderFeed(items);
+            } catch (e) { console.error(e); }
+        }
+
+        function renderFeed(items) {
+            const feed = document.getElementById('marketplace-feed');
+            if(items.length === 0) {
+                feed.innerHTML = `<div class="col-span-full p-20 text-center text-slate-600 italic">No active listings found in the market.</div>`;
+                return;
+            }
+
+            feed.innerHTML = items.map(i => `
+                <div class="market-card glass-panel p-6 rounded-3xl flex flex-col gap-4 border-t-2 ${i.type === 'Sell' ? 'border-t-emerald-500' : 'border-t-blue-500'}">
+                    <div class="flex justify-between items-start">
+                        <span class="px-2 py-1 rounded-md text-[8px] font-black uppercase tracking-widest ${i.type === 'Sell' ? 'bg-emerald-500/10 text-emerald-400' : 'bg-blue-500/10 text-blue-400'}">
+                            ${i.type}
+                        </span>
+                        <span class="text-[9px] text-slate-500 font-bold">${i.created_at.split(' ')[0]}</span>
+                    </div>
+                    <div>
+                        <h3 class="text-xl font-bold text-white uppercase tracking-tight line-clamp-1">${i.title}</h3>
+                        <p class="text-sm text-slate-400 mt-2 line-clamp-3 h-[60px]">${i.description}</p>
+                    </div>
+                    <div class="flex items-center justify-between mt-2 pt-4 border-t border-white/5">
+                        <div class="flex items-center gap-2">
+                            <div class="w-6 h-6 rounded-full bg-violet-600/20 flex items-center justify-center text-[10px] text-violet-400 font-bold">${i.owner_name[0]}</div>
+                            <span class="text-[10px] text-slate-400 font-black uppercase">${i.owner_name}</span>
+                        </div>
+                        <i class="fas fa-arrow-right text-slate-600"></i>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        async function submitPost() {
+            const title = document.getElementById('post-title').value;
+            const desc = document.getElementById('post-desc').value;
+            const type = document.getElementById('post-type').value;
+
+            if(!title || !desc) return alert("Fields cannot be empty.");
+
+            const res = await fetch(`${API_BASE}/api/marketplace/add`, {
+                method: 'POST',
+                headers: {'Content-Type': 'application/json'},
+                credentials: 'include',
+                body: JSON.stringify({ title, description: desc, type })
+            });
+
+            if(res.ok) {
+                location.reload();
+            } else {
+                alert("Network Authorization Failed.");
+            }
+        }
+
+        window.onload = fetchFeed;
     </script>
 </body>
 </html>
