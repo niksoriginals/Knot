@@ -164,9 +164,18 @@
             }, 5000);
         }
 
+        async function fetchResources() {
+            try {
+                const res = await fetch(`${API_BASE}/api/resources`, { credentials: 'include' });
+                const data = await res.json();
+                renderGrid(data);
+            } catch (e) { console.error(e); }
+        }
+
         function renderGrid(resources) {
             const grid = document.getElementById('resource-grid');
             grid.innerHTML = resources.map(r => {
+                // Time format clean karne ke liye (T hata kar space dalo)
                 let timeLabel = r.busy_until ? r.busy_until.replace('T', ' ') : "";
 
                 return `
