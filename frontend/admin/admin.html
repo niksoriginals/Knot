@@ -1,0 +1,117 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>KNOT Admin Dashboard</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+</head>
+<body class="bg-gray-900 text-gray-100 flex h-screen">
+
+    <aside class="w-64 bg-gray-800 border-r border-gray-700 p-6 flex flex-col">
+        <h1 class="text-2xl font-bold text-indigo-500 mb-10 flex items-center">
+            <i class="fas fa-knot mr-3"></i> KNOT ADMIN
+        </h1>
+
+        <nav class="space-y-4 flex-1">
+            <p class="text-xs font-semibold text-gray-500 uppercase tracking-wider">Campus System</p>
+            <button onclick="showTab('resources')" class="w-full flex items-center p-3 rounded-lg hover:bg-indigo-600 transition">
+                <i class="fas fa-vial mr-3"></i> Resources
+            </button>
+            <button onclick="showTab('requests')" class="w-full flex items-center p-3 rounded-lg hover:bg-indigo-600 transition">
+                <i class="fas fa-clock mr-3"></i> Pending Requests
+            </button>
+
+            <div class="pt-6"></div>
+            <p class="text-xs font-semibold text-gray-500 uppercase tracking-wider">Marketplace System</p>
+            <button onclick="showTab('marketplace')" class="w-full flex items-center p-3 rounded-lg hover:bg-red-600 transition">
+                <i class="fas fa-shopping-bag mr-3"></i> Ad Management
+            </button>
+        </nav>
+
+        <button onclick="logout()" class="mt-auto p-3 text-gray-400 hover:text-white flex items-center">
+            <i class="fas fa-sign-out-alt mr-3"></i> Logout
+        </button>
+    </aside>
+
+    <main class="flex-1 overflow-y-auto p-10">
+        
+        <section id="resources-tab" class="tab-content">
+            <div class="flex justify-between items-center mb-8">
+                <h2 class="text-3xl font-bold">Campus Resources</h2>
+                <button class="bg-indigo-600 px-5 py-2 rounded-lg font-bold hover:bg-indigo-500">+ Add Resource</button>
+            </div>
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6" id="resource-list">
+                <div class="bg-gray-800 p-5 rounded-xl border border-gray-700">
+                    <div class="flex justify-between items-start">
+                        <div>
+                            <h3 class="text-xl font-bold">Coding Lab 1</h3>
+                            <span class="text-green-400 text-sm italic">Available</span>
+                        </div>
+                        <button class="text-red-500 hover:bg-red-900/30 p-2 rounded"><i class="fas fa-trash"></i></button>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section id="requests-tab" class="tab-content hidden">
+            <h2 class="text-3xl font-bold mb-8">Pending Approvals</h2>
+            <div class="overflow-x-auto bg-gray-800 rounded-xl border border-gray-700">
+                <table class="w-full text-left">
+                    <thead>
+                        <tr class="border-b border-gray-700 bg-gray-700/50">
+                            <th class="p-4">Student</th>
+                            <th class="p-4">Resource</th>
+                            <th class="p-4">Time</th>
+                            <th class="p-4">Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody id="pending-list">
+                        <tr>
+                            <td class="p-4">Prashant Sharma</td>
+                            <td class="p-4">Seminar Hall 2</td>
+                            <td class="p-4 text-gray-400">10:00 - 12:00</td>
+                            <td class="p-4">
+                                <button class="text-green-500 mr-4 font-bold">Approve</button>
+                                <button class="text-red-500 font-bold">Reject</button>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </section>
+
+        <section id="marketplace-tab" class="tab-content hidden">
+            <h2 class="text-3xl font-bold mb-8 text-red-400">Marketplace Moderation</h2>
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6" id="market-list">
+                <div class="bg-gray-800 flex rounded-xl border border-gray-700 overflow-hidden shadow-lg">
+                    <img src="https://via.placeholder.com/150" class="w-40 object-cover bg-gray-600">
+                    <div class="p-5 flex-1 relative">
+                        <span class="bg-red-600 text-[10px] px-2 py-1 rounded absolute top-5 right-5 font-bold uppercase">LOST</span>
+                        <h3 class="text-xl font-bold">HP Laptop Charger</h3>
+                        <p class="text-sm text-gray-400 mb-4">Found near Canteen area...</p>
+                        <button class="w-full bg-red-900/50 text-red-200 py-2 rounded-lg border border-red-700 hover:bg-red-800">
+                            <i class="fas fa-trash-alt mr-2"></i> Delete Ad
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+    </main>
+
+    <script>
+        function showTab(tabName) {
+            document.querySelectorAll('.tab-content').forEach(tab => tab.classList.add('hidden'));
+            document.getElementById(tabName + '-tab').classList.remove('hidden');
+        }
+
+        // Backend Calls (Examples)
+        async function fetchResources() {
+            // response = await fetch('/admin/resources');
+            // logic to update #resource-list
+        }
+    </script>
+</body>
+</html>

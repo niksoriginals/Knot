@@ -188,6 +188,8 @@ def admin_logout():
     session.pop("admin", None)
     return jsonify({"success": True})
 
+
+
 # --- 5. ADMIN & ANALYTICS ROUTES ---
 def admin_required(f):
     @wraps(f)
@@ -213,7 +215,7 @@ def get_pending_bookings():
     return jsonify([dict(row) for row in rows])
 
 @app.route("/admin/analytics", methods=["GET"])
-# @admin_required
+@admin_required
 def get_analytics():
     conn = get_db()
     usage = conn.execute('''
@@ -230,6 +232,119 @@ def get_analytics():
         "total_users": total_users,
         "server_time": datetime.now().strftime("%Y-%m-%d %H:%M:%S")
     })
+
+@app.route("/admin/resources", methods=["GET"])
+@admin_required
+def list_resources():
+    conn = get_db()
+    resources = conn.execute("SELECT * FROM resources").fetchall()
+    conn.close()
+    return jsonify([dict(row) for row in resources])
+
+@app.route("/admin/resources/add", methods=["POST"])
+@admin_required
+def add_resource():
+    data = request.json
+    name = data.get("name")
+    res_type = data.get("type")
+    needs_appr = data.get("needs_approval", 0)
+
+    if not name or not res_type:
+        return jsonify({"error": "Name and Type are required"}), 400
+
+    try:
+        conn = get_db()
+        conn.execute(
+            "INSERT INTO resources (name, type, needs_approval) VALUES (?, ?, ?)",
+            (name, res_type, needs_appr)
+        )
+        conn.commit()
+        conn.close()
+        return jsonify({"success": True, "message": f"{name} added successfully!"})
+    except Exception as e:
+        return jsonify({"error": str(e)}), 500
+
+@app.route("/admin/resources/delete/<int:res_id>", methods=["DELETE"])
+@admin_required
+def delete_resource(res_id):
+    try:
+        conn = get_db()
+        conn.execute("DELETE FROM resources WHERE id = ?", (res_id,))
+        conn.commit()
+        conn.close()
+        return jsonify({"success": True, "message": "Resource deleted"})
+    except Exception as e:
+        return jsonify({"error": str(e)}), 500
+
+
+ # --- ADMIN: MARKETPLACE MODERATION ---
+
+@app.route("/admin/marketplace/items", methods=["GET"])
+@admin_required
+def admin_get_market():
+    conn = get_db()
+    items = conn.execute('''
+        SELECT m.*, u.name as owner_name 
+        FROM marketplace m 
+        JOIN users u ON m.user_id = u.id
+    ''').fetchall()
+    conn.close()
+    return jsonify([dict(row) for row in items])
+
+@app.route("/admin/marketplace/delete/<int:item_id>", methods=["DELETE"])
+@admin_required
+def admin_delete_market(item_id):
+    conn = get_db()
+    conn.execute("DELETE FROM marketplace WHERE id = ?", (item_id,))
+    conn.commit()
+    conn.close()
+    return jsonify({"success": True, "message": "Ad removed by admin"})   
+
+
+
+
+#------------------------------------------------------------------------------------
+#Main Backend
+@app.route("/api/resource-status/<int:res_id>", methods=["GET"])
+def check_status(res_id):
+    conn = get_db()
+    try:
+        resource = conn.execute(
+            "SELECT name, type, status FROM resources WHERE id = ?", 
+            (res_id,)
+        ).fetchone()
+
+        if not resource:
+            return jsonify({"error": "Resource not found"}), 404
+
+        data = {
+            "name": resource['name'],
+            "type": resource['type'],
+            "status": resource['status'],
+            "occupied_by": None,
+            "ends_at": None
+        }
+        if resource['status'] != 'Available':
+            booking_info = conn.execute('''
+                SELECT u.name, b.end_time 
+                FROM bookings b
+                JOIN users u ON b.user_id = u.id
+                WHERE b.resource_id = ? AND b.status = 'Confirmed'
+                ORDER BY b.start_time DESC LIMIT 1
+            ''', (res_id,)).fetchone()
+
+            if booking_info:
+                data["occupied_by"] = booking_info['name']
+                data["ends_at"] = booking_info['end_time']
+
+        conn.close()
+        return jsonify({"success": True, "data": data})
+
+    except Exception as e:
+        print(f"!!! [SQL ERROR] {e}")
+        return jsonify({"error": "Internal Server Error"}), 500
+
+
 #------------------------------------------------------------------------------------
 @app.route("/")
 def home():
