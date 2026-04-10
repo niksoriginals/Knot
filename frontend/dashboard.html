@@ -3,81 +3,72 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>KNOT Dashboard | Campus OS</title>
+    <title>KNOT Dashboard | Enterprise Campus OS</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
-        @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap');
-        body { font-family: 'Plus Jakarta Sans', sans-serif; background-color: #020617; color: #f8fafc; overflow-x: hidden; }
+        @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;700;800&display=swap');
+        body { font-family: 'Plus Jakarta Sans', sans-serif; background-color: #020617; color: #f8fafc; }
         
-        /* Professional Glass Surface */
-        .glass-surface { background: rgba(15, 23, 42, 0.4); border: 1px solid rgba(255, 255, 255, 0.05); }
+        .nav-glass { background: rgba(2, 6, 23, 0.9); backdrop-filter: blur(20px); border-bottom: 1px solid rgba(255, 255, 255, 0.05); }
         
         .action-card {
-            background: rgba(15, 23, 42, 0.3);
-            border: 1px solid rgba(255, 255, 255, 0.08);
-            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            background: rgba(15, 23, 42, 0.4);
+            border: 1px solid rgba(255, 255, 255, 0.05);
+            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+            border-radius: 2.5rem;
         }
         .action-card:hover {
-            background: rgba(15, 23, 42, 0.7);
+            background: rgba(15, 23, 42, 0.8);
             border-color: #3b82f6;
-            transform: translateY(-4px);
-            box-shadow: 0 15px 30px -10px rgba(59, 130, 241, 0.2);
+            transform: scale(1.02);
+            box-shadow: 0 20px 40px -20px rgba(59, 130, 246, 0.3);
         }
         
-        /* Precise Badges */
-        .badge { font-size: 10px; font-weight: 800; text-transform: uppercase; letter-spacing: 0.05em; padding: 4px 12px; border-radius: 4px; display: inline-block; }
-        .badge-admin { background: #450a0a; color: #f87171; border: 1px solid #7f1d1d; }
-        .badge-dean { background: #2e1065; color: #c084fc; border: 1px solid #4c1d95; }
-        .badge-hod { background: #082f49; color: #38bdf8; border: 1px solid #075985; }
-        .badge-student { background: #0f172a; color: #94a3b8; border: 1px solid #1e293b; }
+        .badge { font-size: 10px; font-weight: 800; text-transform: uppercase; padding: 4px 12px; border-radius: 6px; }
+        .badge-admin { background: #450a0a; color: #f87171; }
+        .badge-dean { background: #2e1065; color: #c084fc; }
+        .badge-hod { background: #082f49; color: #38bdf8; }
+        .badge-student { background: #0f172a; color: #94a3b8; }
 
-        .fade-in { animation: fadeIn 0.6s ease-out forwards; }
-        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+        .fade-in { animation: fadeIn 0.8s ease-out forwards; }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(15px); } to { opacity: 1; transform: translateY(0); } }
     </style>
 </head>
 <body class="min-h-screen flex flex-col">
 
-    <div class="w-full bg-blue-600 py-1.5 px-8 text-center">
-        <p class="text-[10px] font-bold uppercase tracking-[0.2em] text-white">ITS Engineering College • Official Student Resource Gateway</p>
-    </div>
-
-    <nav class="sticky top-0 z-50 bg-slate-950/90 backdrop-blur-xl border-b border-white/5 px-8 py-4">
+    <nav class="nav-glass sticky top-0 z-50 px-8 py-4">
         <div class="max-w-7xl mx-auto flex justify-between items-center">
-            <div class="flex items-center gap-4 cursor-pointer group" onclick="location.reload()">
-                <div class="w-9 h-9 bg-blue-600 rounded-lg flex items-center justify-center shadow-lg group-hover:bg-blue-500 transition-all">
-                    <i class="fas fa-knot text-white text-lg"></i>
+            <div class="flex items-center gap-4 cursor-pointer" onclick="location.reload()">
+                <div class="w-10 h-10 bg-blue-600 rounded-xl flex items-center justify-center shadow-lg">
+                    <i class="fas fa-knot text-white text-xl"></i>
                 </div>
-                <div class="flex flex-col leading-none">
-                    <span class="text-xl font-black tracking-tighter text-white">KNOT<span class="text-blue-500">.</span></span>
-                    <span class="text-[9px] font-bold text-slate-500 uppercase tracking-widest mt-1">Unified Campus OS</span>
-                </div>
+                <span class="text-2xl font-black tracking-tighter text-white uppercase italic">KNOT</span>
             </div>
 
             <div class="flex items-center gap-6">
                 <div id="special-access" class="hidden">
-                    <a href="/management" class="bg-indigo-500/10 text-indigo-400 border border-indigo-500/20 px-4 py-2 rounded-lg text-[10px] font-bold uppercase tracking-widest hover:bg-indigo-500 hover:text-white transition-all">
-                        <i class="fas fa-shield-halved mr-2"></i> Management
+                    <a href="/management" class="bg-indigo-600/20 text-indigo-400 border border-indigo-500/30 px-4 py-2 rounded-xl text-[10px] font-black uppercase tracking-widest hover:bg-indigo-600 hover:text-white transition-all">
+                        Management Console
                     </a>
                 </div>
 
                 <div class="relative group">
-                    <button class="flex items-center gap-3 bg-slate-900 px-3 py-1.5 rounded-xl border border-white/5 hover:border-white/10 transition-all">
-                        <div class="text-right leading-none">
-                            <p id="userName" class="text-xs font-bold text-white uppercase tracking-tight">Syncing...</p>
-                            <span id="userBadge" class="badge-student text-[9px] font-black uppercase mt-1 inline-block opacity-70">Verifying</span>
-                        </div>
-                        <div class="w-8 h-8 rounded-lg bg-slate-800 flex items-center justify-center text-slate-400">
+                    <button class="flex items-center gap-4 bg-slate-900/50 p-2 pr-4 rounded-2xl border border-white/5 hover:border-white/10 transition-all outline-none">
+                        <div class="w-10 h-10 rounded-xl bg-slate-800 flex items-center justify-center text-slate-400 border border-white/5">
                             <i class="fas fa-user-circle"></i>
                         </div>
-                    </button>
-                    <div class="absolute right-0 mt-3 w-56 bg-slate-900 border border-white/10 rounded-xl shadow-2xl opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all z-50 p-2">
-                        <div class="px-4 py-3 border-b border-white/5 mb-2">
-                            <p class="text-[9px] text-slate-500 font-bold uppercase mb-1">Authenticated ID</p>
-                            <p id="userEmail" class="text-xs text-slate-300 truncate">...</p>
+                        <div class="text-left leading-none">
+                            <p id="userName" class="text-sm font-bold text-slate-100">Fetching...</p>
+                            <span id="userBadge" class="badge badge-student mt-1 inline-block">Role</span>
                         </div>
-                        <button onclick="handleLogout()" class="w-full flex items-center gap-3 px-4 py-3 text-sm text-rose-400 hover:bg-rose-500/10 rounded-lg transition-all font-bold">
-                            <i class="fas fa-power-off text-xs"></i> Secure Terminate
+                    </button>
+                    <div class="absolute right-0 mt-3 w-56 bg-slate-900 border border-white/10 rounded-2xl shadow-2xl opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all z-50 p-2">
+                        <div class="px-4 py-3 border-b border-white/5 mb-2">
+                            <p id="userEmail" class="text-[10px] text-slate-500 font-bold uppercase truncate">...</p>
+                        </div>
+                        <button onclick="handleLogout()" class="w-full flex items-center gap-3 px-4 py-3 text-sm text-rose-400 hover:bg-rose-500/10 rounded-xl transition-all font-bold">
+                            <i class="fas fa-power-off text-xs"></i> Log Out
                         </button>
                     </div>
                 </div>
@@ -85,130 +76,56 @@
         </div>
     </nav>
 
-    <main class="max-w-7xl mx-auto w-full px-8 py-12 flex-1 fade-in">
+    <main class="max-w-6xl mx-auto w-full px-8 py-20 flex-1 fade-in">
         
-        <header class="mb-12 flex flex-col md:flex-row md:items-end justify-between gap-6">
-            <div>
-                <h1 class="text-4xl md:text-5xl font-black text-white tracking-tight leading-none mb-3">
-                    Hello, <span id="greetName" class="text-blue-500">Student</span>.
-                </h1>
-                <p class="text-slate-400 font-medium flex items-center gap-3 text-sm">
-                    <i class="fas fa-calendar-day text-blue-500"></i>
-                    Session Date: <span class="text-slate-200">April 10, 2026</span>
-                </p>
-            </div>
-            <div class="flex gap-3">
-                <div class="bg-slate-900/50 border border-white/5 p-4 rounded-2xl min-w-[140px]">
-                    <p class="text-[9px] font-black uppercase text-slate-500 tracking-widest mb-1">Active Bookings</p>
-                    <p class="text-xl font-bold text-white">02</p>
-                </div>
-                <div class="bg-slate-900/50 border border-white/5 p-4 rounded-2xl min-w-[140px]">
-                    <p class="text-[9px] font-black uppercase text-slate-500 tracking-widest mb-1">Marketplace Ads</p>
-                    <p class="text-xl font-bold text-white">00</p>
-                </div>
-            </div>
+        <header class="mb-20 text-center">
+            <h1 class="text-6xl md:text-8xl font-black text-white tracking-tighter mb-6 leading-none">
+                Hello, <span id="greetName" class="text-blue-500 italic">User</span>.
+            </h1>
+            <p class="text-slate-400 text-xl font-medium">ITS Engineering College • Connected Campus Node</p>
         </header>
 
-        <div class="grid grid-cols-1 lg:grid-cols-4 gap-8">
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
             
-            <div class="lg:col-span-3 space-y-8">
-                <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
-                    <a href="/resources" class="action-card p-8 rounded-[2rem] flex flex-col h-full group">
-                        <div class="w-12 h-12 bg-blue-500/10 text-blue-500 rounded-xl flex items-center justify-center mb-6 border border-blue-500/20 group-hover:bg-blue-600 group-hover:text-white transition-all">
-                            <i class="fas fa-microchip text-xl"></i>
-                        </div>
-                        <h3 class="text-lg font-bold text-white mb-2">Resource Hub</h3>
-                        <p class="text-slate-500 text-xs leading-relaxed mb-6">Real-time status of labs, lecture halls, and inventory units.</p>
-                        <span class="mt-auto text-blue-500 text-[10px] font-black uppercase tracking-widest flex items-center gap-2">Initialize Hub <i class="fas fa-chevron-right group-hover:translate-x-1 transition-transform"></i></span>
-                    </a>
-
-                    <a href="/marketplace" class="action-card p-8 rounded-[2rem] flex flex-col h-full group">
-                        <div class="w-12 h-12 bg-emerald-500/10 text-emerald-500 rounded-xl flex items-center justify-center mb-6 border border-emerald-500/20 group-hover:bg-emerald-600 group-hover:text-white transition-all">
-                            <i class="fas fa-handshake text-xl"></i>
-                        </div>
-                        <h3 class="text-lg font-bold text-white mb-2">Marketplace</h3>
-                        <p class="text-slate-500 text-xs leading-relaxed mb-6">Institutional P2P economy for hardware, books, and services.</p>
-                        <span class="mt-auto text-emerald-500 text-[10px] font-black uppercase tracking-widest flex items-center gap-2">Open Market <i class="fas fa-chevron-right group-hover:translate-x-1 transition-transform"></i></span>
-                    </a>
-
-                    <a href="/lost-found" class="action-card p-8 rounded-[2rem] flex flex-col h-full group">
-                        <div class="w-12 h-12 bg-rose-500/10 text-rose-500 rounded-xl flex items-center justify-center mb-6 border border-rose-500/20 group-hover:bg-rose-600 group-hover:text-white transition-all">
-                            <i class="fas fa-search text-xl"></i>
-                        </div>
-                        <h3 class="text-lg font-bold text-white mb-2">Recovery System</h3>
-                        <p class="text-slate-500 text-xs leading-relaxed mb-6">Automated asset recovery and lost item tracking protocols.</p>
-                        <span class="mt-auto text-rose-500 text-[10px] font-black uppercase tracking-widest flex items-center gap-2">Report Item <i class="fas fa-chevron-right group-hover:translate-x-1 transition-transform"></i></span>
-                    </a>
+            <a href="/resources" class="action-card group p-10 flex flex-col h-[320px]">
+                <div class="w-16 h-16 bg-blue-600/10 text-blue-500 rounded-2xl flex items-center justify-center mb-8 border border-blue-500/20 group-hover:bg-blue-600 group-hover:text-white transition-all">
+                    <i class="fas fa-building-circle-check text-3xl"></i>
                 </div>
-
-                <div class="glass-surface rounded-[2rem] p-8">
-                    <div class="flex items-center justify-between mb-8">
-                        <h4 class="text-xl font-bold text-white tracking-tight">Recent Activity Log</h4>
-                        <button class="text-[10px] font-black text-slate-500 uppercase hover:text-blue-500 transition-colors">Clear Logs</button>
-                    </div>
-                    <div class="space-y-4">
-                        <div class="flex items-center justify-between p-4 bg-slate-900/50 rounded-xl border border-white/5">
-                            <div class="flex items-center gap-4">
-                                <div class="w-2 h-2 bg-blue-500 rounded-full"></div>
-                                <p class="text-sm font-semibold text-slate-200">System Handshake Successful</p>
-                            </div>
-                            <span class="text-[10px] font-bold text-slate-500">JUST NOW</span>
-                        </div>
-                        <div class="flex items-center justify-between p-4 bg-slate-900/50 rounded-xl border border-white/5">
-                            <div class="flex items-center gap-4">
-                                <div class="w-2 h-2 bg-emerald-500 rounded-full"></div>
-                                <p class="text-sm font-semibold text-slate-200">Verified institutional email: <span id="logEmail">...</span></p>
-                            </div>
-                            <span class="text-[10px] font-bold text-slate-500">2 MIN AGO</span>
-                        </div>
-                    </div>
+                <h3 class="text-2xl font-bold text-white mb-3">Resource Hub</h3>
+                <p class="text-slate-400 text-sm leading-relaxed mb-6 font-medium">Real-time status of labs and halls. Book slots via institutional QR verification.</p>
+                <div class="mt-auto text-blue-500 text-xs font-black uppercase tracking-[0.2em] flex items-center gap-2">
+                    Access Portal <i class="fas fa-arrow-right transition-transform group-hover:translate-x-2"></i>
                 </div>
-            </div>
+            </a>
 
-            <div class="lg:col-span-1 space-y-6">
-                <div class="bg-blue-600 rounded-[2rem] p-8 text-white">
-                    <h4 class="text-sm font-black uppercase tracking-widest mb-4 flex items-center gap-2">
-                        <i class="fas fa-bullhorn text-xs"></i> Notices
-                    </h4>
-                    <ul class="space-y-4">
-                        <li class="border-b border-white/10 pb-3">
-                            <p class="text-xs font-bold leading-tight">Lab B3 maintenance scheduled for Monday.</p>
-                            <span class="text-[9px] font-black opacity-60">Admin Office</span>
-                        </li>
-                        <li>
-                            <p class="text-xs font-bold leading-tight">New marketplace guidelines updated for gadgets.</p>
-                            <span class="text-[9px] font-black opacity-60">System Desk</span>
-                        </li>
-                    </ul>
+            <a href="/marketplace" class="action-card group p-10 flex flex-col h-[320px]">
+                <div class="w-16 h-16 bg-emerald-500/10 text-emerald-500 rounded-2xl flex items-center justify-center mb-8 border border-emerald-500/20 group-hover:bg-emerald-500 group-hover:text-white transition-all">
+                    <i class="fas fa-tags text-3xl"></i>
                 </div>
+                <h3 class="text-2xl font-bold text-white mb-3">Marketplace</h3>
+                <p class="text-slate-400 text-sm leading-relaxed mb-6 font-medium">Secure student economy. Trade academic gear and books with verified peers.</p>
+                <div class="mt-auto text-emerald-500 text-xs font-black uppercase tracking-[0.2em] flex items-center gap-2">
+                    Start Trading <i class="fas fa-arrow-right transition-transform group-hover:translate-x-2"></i>
+                </div>
+            </a>
 
-                <div class="glass-surface rounded-[2rem] p-8">
-                    <h4 class="text-sm font-black uppercase tracking-widest text-slate-500 mb-6">Profile Metrics</h4>
-                    <div class="space-y-6">
-                        <div>
-                            <p class="text-[10px] font-black text-slate-500 uppercase tracking-widest mb-2">Department Status</p>
-                            <div class="flex items-center gap-3">
-                                <i class="fas fa-graduation-cap text-blue-500"></i>
-                                <span id="userDeptDisplay" class="text-sm font-bold text-slate-200 tracking-tight italic">...</span>
-                            </div>
-                        </div>
-                        <div>
-                            <p class="text-[10px] font-black text-slate-500 uppercase tracking-widest mb-2">Trust Level</p>
-                            <div class="w-full bg-slate-800 h-1.5 rounded-full overflow-hidden">
-                                <div class="bg-blue-500 h-full w-[85%] rounded-full"></div>
-                            </div>
-                            <p class="text-[9px] text-slate-500 font-bold mt-2">Level: Verified Tier</p>
-                        </div>
-                    </div>
+            <a href="/lost-found" class="action-card group p-10 flex flex-col h-[320px]">
+                <div class="w-16 h-16 bg-rose-500/10 text-rose-500 rounded-2xl flex items-center justify-center mb-8 border border-rose-500/20 group-hover:bg-rose-500 group-hover:text-white transition-all">
+                    <i class="fas fa-search-location text-3xl"></i>
                 </div>
-            </div>
+                <h3 class="text-2xl font-bold text-white mb-3">Recovery Ops</h3>
+                <p class="text-slate-400 text-sm leading-relaxed mb-6 font-medium">Automated Lost & Found inventory with institutional ownership verification.</p>
+                <div class="mt-auto text-rose-500 text-xs font-black uppercase tracking-[0.2em] flex items-center gap-2">
+                    Report Asset <i class="fas fa-arrow-right transition-transform group-hover:translate-x-2"></i>
+                </div>
+            </a>
 
         </div>
     </main>
 
-    <footer class="px-8 py-10 border-t border-white/5 text-center mt-auto">
-        <p class="text-slate-600 text-[9px] font-black uppercase tracking-[0.4em]">
-            &copy; 2026 KNOT ENGINE &bull; INSTITUTIONAL BUILD &bull; POWERED BY NISO
+    <footer class="px-8 py-12 border-t border-white/5 text-center">
+        <p class="text-slate-700 text-[10px] font-black uppercase tracking-[0.5em]">
+            &copy; 2026 KNOT &bull; I.T.S Engineering College Ecosystem
         </p>
     </footer>
 
@@ -226,20 +143,15 @@
 
                 const profile = await profileRes.json();
                 if (profile && profile.success) {
-                    // Main Data Injection
                     document.getElementById('userName').innerText = profile.name;
-                    document.getElementById('greetName').innerText = profile.name ? profile.name.split(' ')[0] : "Verified User";
+                    document.getElementById('greetName').innerText = profile.name ? profile.name.split(' ')[0] : "Student";
                     document.getElementById('userEmail').innerText = profile.email;
-                    document.getElementById('logEmail').innerText = profile.email;
-                    document.getElementById('userDeptDisplay').innerText = profile.department || "ITS Engineering";
                     
-                    // Role Rendering
                     const badgeEl = document.getElementById('userBadge');
                     const role = profile.role.toLowerCase();
                     badgeEl.innerText = role;
-                    badgeEl.className = `badge badge-${role}`;
+                    badgeEl.className = `badge badge-${role} mt-1 inline-block`;
 
-                    // Management UI
                     if (['admin', 'hod', 'dean'].includes(role)) {
                         document.getElementById('special-access').classList.remove('hidden');
                     }
@@ -250,7 +162,7 @@
         }
 
         async function handleLogout() {
-            if(!confirm("Are you sure you want to terminate the secure session?")) return;
+            if(!confirm("Securely sign out of KNOT?")) return;
             try {
                 await fetch(`${API_BASE}/auth/logout`, { method: 'POST', credentials: 'include' });
                 window.location.href = "/login";
