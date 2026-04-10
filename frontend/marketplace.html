@@ -7,58 +7,245 @@
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
-        @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;700;800&display=swap');
-        body { font-family: 'Plus Jakarta Sans', sans-serif; background-color: #020617; color: #f8fafc; }
-        .glass-panel { background: rgba(15, 23, 42, 0.4); backdrop-filter: blur(20px); border: 1px solid rgba(255, 255, 255, 0.05); }
-        .market-card { transition: all 0.3s ease; }
-        .market-card:hover { border-color: #8b5cf6; transform: translateY(-2px); }
+        @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@200;300;400;500;600;700;800&display=swap');
+        
+        :root {
+            --bg-base: #030712; /* Slate-950/almost black */
+            --glass-bg: rgba(15, 23, 42, 0.4);
+            --glass-border: rgba(255, 255, 255, 0.08);
+            --glass-highlight: rgba(255, 255, 255, 0.15);
+            --accent-sell: #10b981; /* Emerald-500 */
+            --accent-trade: #3b82f6; /* Blue-500 */
+            --accent-brand: #8b5cf6; /* Violet-500 */
+        }
+
+        body { 
+            font-family: 'Plus Jakarta Sans', sans-serif; 
+            background-color: var(--bg-base); 
+            color: #f8fafc; 
+            overflow-x: hidden;
+            background-image: 
+                radial-gradient(circle at 15% 50%, rgba(139, 92, 246, 0.08) 0%, transparent 40%),
+                radial-gradient(circle at 85% 30%, rgba(59, 130, 246, 0.08) 0%, transparent 40%);
+            background-attachment: fixed;
+        }
+
+        /* Glassmorphism Classes */
+        .glass-panel { 
+            background: linear-gradient(135deg, rgba(255, 255, 255, 0.04) 0%, rgba(255, 255, 255, 0.01) 100%);
+            backdrop-filter: blur(24px); 
+            -webkit-backdrop-filter: blur(24px);
+            border: 1px solid var(--glass-border); 
+            box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.3);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .glass-panel::before {
+            content: '';
+            position: absolute;
+            top: 0; left: 0; right: 0; height: 1px;
+            background: linear-gradient(90deg, transparent, var(--glass-highlight), transparent);
+            opacity: 0.5;
+        }
+
+        /* Marketplace Cards */
+        .market-card { 
+            transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275); 
+            transform-origin: center bottom;
+        }
+        
+        .market-card:hover { 
+            transform: translateY(-8px) scale(1.02); 
+            border-color: rgba(139, 92, 246, 0.4); 
+            box-shadow: 0 20px 40px -10px rgba(0, 0, 0, 0.5),
+                        0 0 20px rgba(139, 92, 246, 0.15);
+        }
+
+        .market-card.type-sell:hover {
+            border-color: rgba(16, 185, 129, 0.4);
+            box-shadow: 0 20px 40px -10px rgba(0, 0, 0, 0.5),
+                        0 0 20px rgba(16, 185, 129, 0.15);
+        }
+
+        .market-card.type-trade:hover {
+            border-color: rgba(59, 130, 246, 0.4);
+            box-shadow: 0 20px 40px -10px rgba(0, 0, 0, 0.5),
+                        0 0 20px rgba(59, 130, 246, 0.15);
+        }
+
+        .market-card .arrow-icon {
+            transition: transform 0.3s ease;
+        }
+
+        .market-card:hover .arrow-icon {
+            transform: translateX(4px);
+        }
+
+        /* Animated Button */
+        .btn-glow {
+            position: relative;
+            background: rgba(139, 92, 246, 0.2);
+            border: 1px solid rgba(139, 92, 246, 0.5);
+            transition: all 0.3s ease;
+            overflow: hidden;
+            z-index: 1;
+        }
+        
+        .btn-glow::before {
+            content: '';
+            position: absolute;
+            top: 0; left: -100%; width: 100%; height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(139, 92, 246, 0.4), transparent);
+            transition: left 0.5s ease;
+            z-index: -1;
+        }
+
+        .btn-glow:hover {
+            background: rgba(139, 92, 246, 0.4);
+            box-shadow: 0 0 20px rgba(139, 92, 246, 0.4);
+        }
+
+        .btn-glow:hover::before {
+            left: 100%;
+        }
+
+        /* Custom Scrollbar */
+        ::-webkit-scrollbar { width: 8px; }
+        ::-webkit-scrollbar-track { background: var(--bg-base); }
+        ::-webkit-scrollbar-thumb { background: rgba(255, 255, 255, 0.1); border-radius: 4px; }
+        ::-webkit-scrollbar-thumb:hover { background: rgba(255, 255, 255, 0.2); }
+
+        /* Input Styles */
+        .premium-input {
+            background: rgba(0, 0, 0, 0.3);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            transition: all 0.3s ease;
+        }
+        .premium-input:focus {
+            border-color: var(--accent-brand);
+            background: rgba(0, 0, 0, 0.5);
+            box-shadow: 0 0 15px rgba(139, 92, 246, 0.15);
+        }
+        
+        .shimmer {
+            background: linear-gradient(90deg, rgba(255,255,255,0) 0%, rgba(255,255,255,0.05) 50%, rgba(255,255,255,0) 100%);
+            background-size: 200% 100%;
+            animation: shimmer 2s infinite;
+        }
+
+        @keyframes shimmer {
+            0% { background-position: -200% 0; }
+            100% { background-position: 200% 0; }
+        }
+        
+        @keyframes fade-in-up {
+            0% { opacity: 0; transform: translateY(20px); }
+            100% { opacity: 1; transform: translateY(0); }
+        }
+        .animate-fade-in-up { animation: fade-in-up 0.6s ease forwards; }
+
+        @keyframes shake {
+            0%, 100% { transform: translateX(0); }
+            10%, 30%, 50%, 70%, 90% { transform: translateX(-5px); }
+            20%, 40%, 60%, 80% { transform: translateX(5px); }
+        }
+        .animate-shake { animation: shake 0.5s cubic-bezier(.36,.07,.19,.97) both; }
     </style>
 </head>
-<body class="min-h-screen">
+<body class="min-h-screen flex flex-col selection:bg-violet-500/30 selection:text-white">
 
-    <nav class="sticky top-0 z-50 bg-slate-950/80 backdrop-blur-md border-b border-white/5 px-8 py-4">
+    <!-- Ambient Glows behind everything -->
+    <div class="fixed top-[-20%] left-[-10%] w-[50%] h-[50%] bg-violet-600/10 rounded-full blur-[120px] pointer-events-none z-[-1]"></div>
+    <div class="fixed bottom-[-20%] right-[-10%] w-[50%] h-[50%] bg-blue-600/10 rounded-full blur-[120px] pointer-events-none z-[-1]"></div>
+
+    <nav class="sticky top-0 z-50 bg-slate-950/60 backdrop-blur-xl border-b border-white/10 px-6 py-4 lg:px-12 transition-all">
         <div class="max-w-7xl mx-auto flex justify-between items-center">
-            <div class="flex items-center gap-4 cursor-pointer" onclick="location.href='/dashboard'">
-                <div class="w-9 h-9 bg-violet-600 rounded-xl flex items-center justify-center shadow-lg text-white font-bold italic">K</div>
-                <span class="text-xl font-black tracking-tighter uppercase italic">KNOT <span class="text-violet-500 text-sm">Market</span></span>
+            <div class="flex items-center gap-4 cursor-pointer group" onclick="location.href='/dashboard'">
+                <div class="relative w-10 h-10 rounded-xl flex items-center justify-center bg-gradient-to-br from-violet-500 to-indigo-600 shadow-lg shadow-violet-500/30 group-hover:shadow-violet-500/50 transition-all duration-300">
+                    <span class="text-white font-black italic text-lg z-10">K</span>
+                    <div class="absolute inset-0 bg-white/20 rounded-xl opacity-0 group-hover:opacity-100 transition-opacity"></div>
+                </div>
+                <span class="text-xl font-black tracking-tighter uppercase italic bg-clip-text text-transparent bg-gradient-to-r from-white to-slate-400">
+                    KNOT <span class="bg-clip-text text-transparent bg-gradient-to-r from-violet-400 to-fuchsia-400 text-sm ml-1">Market</span>
+                </span>
             </div>
-            <button onclick="openPostModal()" class="bg-violet-600 hover:bg-violet-500 px-5 py-2 rounded-xl text-xs font-black uppercase tracking-widest transition-all">List Item</button>
+            <button onclick="openPostModal()" class="btn-glow px-6 py-2.5 rounded-xl text-xs font-bold uppercase tracking-widest text-violet-100 flex items-center gap-2">
+                <i class="fas fa-plus text-[10px]"></i> List Item
+            </button>
         </div>
     </nav>
 
-    <main class="max-w-5xl mx-auto px-8 py-12">
-        <header class="mb-12">
-            <h1 class="text-4xl font-black text-white tracking-tight mb-2">Ecosystem Marketplace</h1>
-            <p class="text-slate-500 font-medium italic">Buy, sell, or trade assets within the KNOT network operatives.</p>
+    <main class="flex-1 max-w-6xl w-full mx-auto px-6 py-16 lg:px-12 lg:py-20 relative z-10">
+        <header class="mb-16 text-center md:text-left animate-fade-in-up">
+            <div class="inline-block px-3 py-1 rounded-full border border-violet-500/30 bg-violet-500/10 text-violet-300 text-[10px] font-bold uppercase tracking-widest mb-6">
+                Ecosystem Hub
+            </div>
+            <h1 class="text-4xl md:text-6xl font-black text-white tracking-tight mb-4 drop-shadow-sm">
+                Marketplace <span class="text-transparent bg-clip-text bg-gradient-to-r from-violet-400 to-indigo-400 italic">Ledger</span>
+            </h1>
+            <p class="text-slate-400 font-medium text-lg max-w-2xl mx-auto md:mx-0">
+                Discover peer-to-peer exchanges. Buy, sell, or barter assets seamlessly within the network.
+            </p>
         </header>
 
-        <div id="marketplace-feed" class="grid grid-cols-1 md:grid-cols-2 gap-6">
-            <div class="col-span-full p-20 text-center text-slate-600 animate-pulse">Syncing Marketplace Ledger...</div>
+        <div id="loading" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            <div class="glass-panel p-6 rounded-3xl h-[220px] shimmer"></div>
+            <div class="glass-panel p-6 rounded-3xl h-[220px] shimmer hidden md:block"></div>
+            <div class="glass-panel p-6 rounded-3xl h-[220px] shimmer hidden lg:block"></div>
+        </div>
+
+        <div id="marketplace-feed" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 hidden">
+            <!-- Feed injected via JS -->
         </div>
     </main>
 
-    <div id="post-modal" class="fixed inset-0 bg-black/90 backdrop-blur-sm hidden flex items-center justify-center z-[100] p-6">
-        <div class="glass-panel p-8 w-full max-w-md rounded-[2.5rem] border-t-2 border-violet-500">
-            <h3 class="text-2xl font-black mb-6 uppercase italic">Create New Listing</h3>
-            <div class="space-y-4">
-                <div>
-                    <label class="text-[9px] font-black uppercase text-slate-500 ml-1">Listing Type</label>
-                    <select id="post-type" class="w-full bg-slate-900 border border-white/10 p-4 rounded-2xl text-white outline-none focus:border-violet-500 mt-1">
-                        <option value="Sell">For Sale (Price inside)</option>
-                        <option value="Trade">Barter / Trade</option>
-                    </select>
+    <!-- Post Modal -->
+    <div id="post-modal" class="fixed inset-0 bg-slate-950/80 backdrop-blur-md hidden z-[100] transition-opacity duration-300 opacity-0 overflow-y-auto">
+        <div class="min-h-screen flex items-center justify-center p-4">
+            <div class="fixed inset-0" onclick="closePostModal()"></div>
+            
+            <div class="modal-content glass-panel p-8 md:p-10 w-full max-w-lg rounded-[2.5rem] relative transform scale-95 transition-all duration-300 z-10 border-t border-t-violet-500/50 shadow-2xl shadow-violet-900/20">
+                
+                <div class="absolute -top-4 -right-4 w-24 h-24 bg-violet-500/20 blur-2xl rounded-full pointer-events-none"></div>
+
+                <div class="flex justify-between items-center mb-8">
+                    <h3 class="text-2xl md:text-3xl font-black uppercase italic bg-clip-text text-transparent bg-gradient-to-r from-white to-slate-300">New Listing</h3>
+                    <button onclick="closePostModal()" class="w-8 h-8 rounded-full bg-white/5 hover:bg-white/10 flex items-center justify-center text-slate-400 hover:text-white transition-colors">
+                        <i class="fas fa-times"></i>
+                    </button>
                 </div>
-                <div>
-                    <label class="text-[9px] font-black uppercase text-slate-500 ml-1">Item / Service Title</label>
-                    <input type="text" id="post-title" placeholder="Ex: Calculus Book or Arduino Kit" class="w-full bg-slate-900 border border-white/10 p-4 rounded-2xl text-white outline-none focus:border-violet-500 mt-1">
-                </div>
-                <div>
-                    <label class="text-[9px] font-black uppercase text-slate-500 ml-1">Description & Pricing</label>
-                    <textarea id="post-desc" rows="3" placeholder="Condition? Price? Exchange for what?" class="w-full bg-slate-900 border border-white/10 p-4 rounded-2xl text-white outline-none focus:border-violet-500 mt-1"></textarea>
-                </div>
-                <div class="flex gap-3 pt-4">
-                    <button onclick="closePostModal()" class="flex-1 text-slate-500 font-bold uppercase text-[10px]">Abort</button>
-                    <button onclick="submitPost()" class="flex-[2] bg-violet-600 py-4 rounded-2xl font-black text-xs uppercase tracking-widest shadow-xl shadow-violet-600/20">Authorize Broadcast</button>
+
+                <div class="space-y-5">
+                    <div>
+                        <label class="text-[10px] font-black uppercase tracking-widest text-violet-400 ml-1 block mb-2">Transaction Type</label>
+                        <div class="relative">
+                            <select id="post-type" class="w-full premium-input p-4 rounded-2xl text-white outline-none appearance-none cursor-pointer">
+                                <option value="Sell" class="bg-slate-900 text-white">For Sale (Set price inside)</option>
+                                <option value="Trade" class="bg-slate-900 text-white">Barter / Trade</option>
+                            </select>
+                            <div class="absolute right-4 top-1/2 -translate-y-1/2 pointer-events-none text-slate-500">
+                                <i class="fas fa-chevron-down text-xs"></i>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div>
+                        <label class="text-[10px] font-black uppercase tracking-widest text-violet-400 ml-1 block mb-2">Item Title</label>
+                        <input type="text" id="post-title" placeholder="E.g. Engineering Mathematics Book" class="w-full premium-input p-4 rounded-2xl text-white outline-none placeholder-slate-600">
+                    </div>
+
+                    <div>
+                        <label class="text-[10px] font-black uppercase tracking-widest text-violet-400 ml-1 block mb-2">Details & Pricing</label>
+                        <textarea id="post-desc" rows="4" placeholder="Describe the item condition, price, or what you're looking to trade for..." class="w-full premium-input p-4 rounded-2xl text-white outline-none resize-none placeholder-slate-600"></textarea>
+                    </div>
+
+                    <div class="flex gap-4 pt-6 shrink-0">
+                        <button onclick="closePostModal()" class="flex-1 py-4 rounded-2xl font-bold uppercase text-[11px] tracking-widest text-slate-400 hover:text-white hover:bg-white/5 transition-colors">Cancel</button>
+                        <button onclick="submitPost(event)" class="flex-[2] bg-gradient-to-r from-violet-600 to-indigo-600 hover:from-violet-500 hover:to-indigo-500 py-4 rounded-2xl font-black text-xs uppercase tracking-widest text-white shadow-lg shadow-violet-500/25 transition-all transform hover:scale-[1.02] active:scale-[0.98]">
+                            <i class="fas fa-paper-plane mr-2"></i> Authorize
+                        </button>
+                    </div>
                 </div>
             </div>
         </div>
@@ -66,71 +253,139 @@
 
     <script>
         const API_BASE = "https://apiknot.niksoriginals.in";
+        const modal = document.getElementById('post-modal');
+        const modalContent = modal.querySelector('.modal-content');
 
-        function openPostModal() { document.getElementById('post-modal').classList.remove('hidden'); }
-        function closePostModal() { document.getElementById('post-modal').classList.add('hidden'); }
+        function openPostModal() { 
+            modal.classList.remove('hidden');
+            void modal.offsetWidth; // Force reflow
+            modal.classList.remove('opacity-0');
+            modalContent.classList.remove('scale-95');
+            modalContent.classList.add('scale-100');
+        }
+
+        function closePostModal() { 
+            modal.classList.add('opacity-0');
+            modalContent.classList.remove('scale-100');
+            modalContent.classList.add('scale-95');
+            setTimeout(() => modal.classList.add('hidden'), 300);
+        }
 
         async function fetchFeed() {
             try {
-                // Requesting only Sell/Trade items via category filter
                 const res = await fetch(`${API_BASE}/api/marketplace?category=market`, { credentials: 'include' });
                 const items = await res.json();
+                
+                document.getElementById('loading').classList.add('hidden');
+                document.getElementById('marketplace-feed').classList.remove('hidden');
+                
                 renderFeed(items);
-            } catch (e) { console.error(e); }
+            } catch (e) { 
+                console.error(e); 
+                document.getElementById('loading').innerHTML = `<div class="col-span-full p-12 text-center text-red-400 bg-red-400/10 rounded-3xl border border-red-500/20 font-bold uppercase tracking-wide text-sm">Failed to connect to marketplace ledger.</div>`;
+            }
         }
 
         function renderFeed(items) {
             const feed = document.getElementById('marketplace-feed');
-            if(items.length === 0) {
-                feed.innerHTML = `<div class="col-span-full p-20 text-center text-slate-600 italic">No active listings found in the market.</div>`;
+            if(!items || items.length === 0) {
+                feed.classList.remove('grid', 'grid-cols-1', 'md:grid-cols-2', 'lg:grid-cols-3');
+                feed.innerHTML = `
+                    <div class="col-span-full py-24 text-center glass-panel rounded-[2.5rem] flex flex-col items-center justify-center">
+                        <div class="w-16 h-16 bg-slate-800/50 rounded-full flex items-center justify-center mb-4 text-slate-500 shadow-inner">
+                            <i class="fas fa-box-open text-2xl"></i>
+                        </div>
+                        <h3 class="text-2xl font-black text-white mb-2 tracking-tight">No active listings</h3>
+                        <p class="text-slate-500 text-sm max-w-sm mx-auto font-medium">The market is currently quiet. Be the first to list an item or initiate a trade.</p>
+                        <button onclick="openPostModal()" class="mt-8 btn-glow px-8 py-3 rounded-xl text-xs font-bold text-white uppercase tracking-widest transition-colors">Create Listing</button>
+                    </div>`;
                 return;
             }
 
-            feed.innerHTML = items.map(i => `
-                <div class="market-card glass-panel p-6 rounded-3xl flex flex-col gap-4 border-t-2 ${i.type === 'Sell' ? 'border-t-emerald-500' : 'border-t-blue-500'}">
-                    <div class="flex justify-between items-start">
-                        <span class="px-2 py-1 rounded-md text-[8px] font-black uppercase tracking-widest ${i.type === 'Sell' ? 'bg-emerald-500/10 text-emerald-400' : 'bg-blue-500/10 text-blue-400'}">
-                            ${i.type}
+            feed.innerHTML = items.map((i, index) => {
+                const isSell = i.type === 'Sell';
+                const tagColor = isSell ? 'text-emerald-400 bg-emerald-500/10 border-emerald-500/20' : 'text-blue-400 bg-blue-500/10 border-blue-500/20';
+                const typeClass = isSell ? 'type-sell border-t-emerald-500/50' : 'type-trade border-t-blue-500/50';
+                const initial = i.owner_name ? i.owner_name[0].toUpperCase() : '?';
+                const delay = index * 0.1; // Staggered animation
+
+                return `
+                <div class="market-card ${typeClass} glass-panel p-8 rounded-3xl flex flex-col gap-5 opacity-0 animate-fade-in-up hover:z-10 group relative" style="animation-delay: ${delay}s">
+                    <div class="absolute top-0 right-0 w-32 h-32 bg-white/[0.02] rounded-full blur-2xl group-hover:bg-white/[0.04] transition-colors pointer-events-none"></div>
+
+                    <div class="flex justify-between items-center z-10">
+                        <span class="px-3 py-1.5 rounded-lg text-[9px] font-black uppercase tracking-widest border ${tagColor}">
+                            <i class="${isSell ? 'fas fa-tag' : 'fas fa-exchange-alt'} mr-1.5 opacity-70"></i>${i.type}
                         </span>
-                        <span class="text-[9px] text-slate-500 font-bold">${i.created_at.split(' ')[0]}</span>
+                        <span class="text-[10px] text-slate-500 font-bold tracking-wider flex items-center gap-1.5">
+                            <i class="far fa-clock"></i>
+                            ${i.created_at ? i.created_at.split(' ')[0] : 'Just now'}
+                        </span>
                     </div>
-                    <div>
-                        <h3 class="text-xl font-bold text-white uppercase tracking-tight line-clamp-1">${i.title}</h3>
-                        <p class="text-sm text-slate-400 mt-2 line-clamp-3 h-[60px]">${i.description}</p>
+                    
+                    <div class="flex-1 z-10">
+                        <h3 class="text-xl font-bold text-white tracking-tight line-clamp-2 leading-tight group-hover:text-violet-200 transition-colors">${i.title}</h3>
+                        <p class="text-sm text-slate-400 mt-3 line-clamp-3 leading-relaxed">${i.description}</p>
                     </div>
-                    <div class="flex items-center justify-between mt-2 pt-4 border-t border-white/5">
-                        <div class="flex items-center gap-2">
-                            <div class="w-6 h-6 rounded-full bg-violet-600/20 flex items-center justify-center text-[10px] text-violet-400 font-bold">${i.owner_name[0]}</div>
-                            <span class="text-[10px] text-slate-400 font-black uppercase">${i.owner_name}</span>
+                    
+                    <div class="flex items-center justify-between mt-4 pt-5 border-t border-white/10 z-10">
+                        <div class="flex items-center gap-3">
+                            <div class="w-8 h-8 rounded-full bg-gradient-to-br from-slate-700 to-slate-800 border border-white/5 flex items-center justify-center text-xs text-white font-black shadow-inner">
+                                ${initial}
+                            </div>
+                            <div class="flex flex-col">
+                                <span class="text-[8px] text-slate-500 font-bold uppercase tracking-widest mb-0.5">Listed By</span>
+                                <span class="text-[11px] text-slate-300 font-bold uppercase tracking-wider">${i.owner_name || 'Anonymous'}</span>
+                            </div>
                         </div>
-                        <i class="fas fa-arrow-right text-slate-600"></i>
+                        <div class="w-8 h-8 rounded-full bg-white/5 flex items-center justify-center group-hover:bg-violet-500/20 transition-colors">
+                            <i class="fas fa-arrow-right text-slate-400 group-hover:text-violet-400 arrow-icon text-xs"></i>
+                        </div>
                     </div>
                 </div>
-            `).join('');
+            `}).join('');
         }
 
-        async function submitPost() {
+        async function submitPost(event) {
             const title = document.getElementById('post-title').value;
             const desc = document.getElementById('post-desc').value;
             const type = document.getElementById('post-type').value;
 
-            if(!title || !desc) return alert("Fields cannot be empty.");
+            if(!title || !desc) {
+                modalContent.classList.add('animate-shake');
+                setTimeout(() => modalContent.classList.remove('animate-shake'), 500);
+                return alert("Please fill in all details before authorizing.");
+            }
 
-            const res = await fetch(`${API_BASE}/api/marketplace/add`, {
-                method: 'POST',
-                headers: {'Content-Type': 'application/json'},
-                credentials: 'include',
-                body: JSON.stringify({ title, description: desc, type })
-            });
+            const btn = event ? event.currentTarget : document.querySelector('button[onclick^="submitPost"]');
+            const originalContent = btn.innerHTML;
+            btn.innerHTML = `<i class="fas fa-spinner fa-spin mr-2"></i> Processing...`;
+            btn.disabled = true;
 
-            if(res.ok) {
-                location.reload();
-            } else {
-                alert("Network Authorization Failed.");
+            try {
+                const res = await fetch(`${API_BASE}/api/marketplace/add`, {
+                    method: 'POST',
+                    headers: {'Content-Type': 'application/json'},
+                    credentials: 'include',
+                    body: JSON.stringify({ title, description: desc, type })
+                });
+
+                if(res.ok) {
+                    location.reload();
+                } else {
+                    alert("Network Authorization Failed. Please try again.");
+                }
+            } catch (e) {
+                console.error(e);
+                alert("Connection error.");
+            } finally {
+                btn.innerHTML = originalContent;
+                btn.disabled = false;
             }
         }
 
-        window.onload = fetchFeed;
+        // Initialize Native logic
+        window.addEventListener('DOMContentLoaded', fetchFeed);
     </script>
 </body>
 </html>
