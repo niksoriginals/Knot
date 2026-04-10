@@ -1,3 +1,4 @@
+
 <!DOCTYPE html>
 <html lang="en">
 
@@ -79,6 +80,7 @@
         </div>
     </main>
 
+    <!-- [ MODAL FRAMEWORK ] -->
     <div id="booking-modal"
         class="fixed inset-0 bg-black/90 backdrop-blur-sm hidden flex items-center justify-center z-[100] p-6">
         <div class="glass-panel p-8 w-full max-w-md rounded-[2.5rem] shadow-2xl relative border-t-2 border-blue-500">
@@ -98,16 +100,69 @@
                     <input type="datetime-local" id="book-end"
                         class="w-full bg-slate-900 border border-white/10 p-4 rounded-2xl text-white outline-none focus:border-blue-500 mt-1">
                 </div>
-                <button onclick="confirmBooking()"
-                    class="w-full bg-blue-600 hover:bg-blue-500 py-4 rounded-2xl font-black text-xs uppercase tracking-widest mt-6 transition-all shadow-xl shadow-blue-600/20">Confirm
-                    Reservation</button>
+                <!-- Prevented multiple clicks by assigning an ID for manipulation -->
+                <button id="confirm-btn" onclick="confirmBooking()"
+                    class="w-full bg-blue-600 hover:bg-blue-500 py-4 rounded-2xl font-black text-xs uppercase tracking-widest mt-6 transition-all shadow-xl shadow-blue-600/20 flex items-center justify-center">
+                    Confirm Reservation
+                </button>
             </div>
         </div>
     </div>
 
+    <!-- [ NOTIFICATION SYSTEM ] -->
+    <div id="notification-container" class="fixed bottom-6 right-6 z-[200] flex flex-col gap-3 pointer-events-none"></div>
+
     <script>
         const API_BASE = "https://apiknot.niksoriginals.in";
         let activeResId = null;
+        let isBooking = false; // State lock to prevent spam clicking
+
+        // --- NOTIFICATION ENGINE ---
+        function showNotification(message, type = 'info') {
+            const container = document.getElementById('notification-container');
+            const notif = document.createElement('div');
+            
+            let borderStyle = 'border-blue-500/30';
+            let icon = '<i class="fas fa-info-circle text-blue-400 text-lg"></i>';
+            let bgStyle = 'bg-blue-500/10';
+            
+            if (type === 'error') {
+                borderStyle = 'border-rose-500/30';
+                icon = '<i class="fas fa-exclamation-triangle text-rose-400 text-lg"></i>';
+                bgStyle = 'bg-rose-500/10';
+            } else if (type === 'success') {
+                borderStyle = 'border-emerald-500/30';
+                icon = '<i class="fas fa-check-circle text-emerald-400 text-lg"></i>';
+                bgStyle = 'bg-emerald-500/10';
+            }
+            
+            notif.className = `glass-panel p-4 pr-6 flex items-center gap-4 ${bgStyle} border ${borderStyle} rounded-2xl transform translate-x-[120%] opacity-0 transition-all duration-500 ease-[cubic-bezier(0.16,1,0.3,1)] pointer-events-auto shadow-[0_10px_40px_rgba(0,0,0,0.5)]`;
+            
+            notif.innerHTML = `
+                <div class="flex-shrink-0 flex items-center justify-center w-8 h-8 rounded-full bg-black/30 border border-white/5">${icon}</div>
+                <div class="text-[11px] font-bold tracking-wider text-white">${message}</div>
+                <button onclick="this.parentElement.style.opacity='0'; this.parentElement.style.transform='translateX(120%)'; setTimeout(() => this.parentElement.remove(), 500);" class="ml-2 text-slate-400 hover:text-white transition-colors focus:outline-none">
+                    <i class="fas fa-times"></i>
+                </button>
+            `;
+            
+            container.appendChild(notif);
+            
+            requestAnimationFrame(() => {
+                requestAnimationFrame(() => {
+                    notif.style.transform = 'translateX(0)';
+                    notif.style.opacity = '1';
+                });
+            });
+            
+            setTimeout(() => {
+                if(notif.parentElement) {
+                    notif.style.transform = 'translateX(120%)';
+                    notif.style.opacity = '0';
+                    setTimeout(() => notif.remove(), 500);
+                }
+            }, 5000);
+        }
 
         async function fetchResources() {
             try {
@@ -120,34 +175,44 @@
         function renderGrid(resources) {
             const grid = document.getElementById('resource-grid');
             grid.innerHTML = resources.map(r => `
-        <div class="res-card glass-panel p-6 rounded-[2rem] flex flex-col gap-6" data-name="${r.name.toLowerCase()}">
-            <div class="flex justify-between items-start">
-                <div class="w-12 h-12 bg-slate-900 rounded-2xl flex items-center justify-center text-blue-500 border border-white/5">
-                    <i class="fas ${r.type === 'Lab' ? 'fa-microchip' : 'fa-landmark-dome'} text-xl"></i>
+                <div class="res-card glass-panel p-6 rounded-[2rem] flex flex-col gap-6" data-name="${r.name.toLowerCase()}">
+                    <div class="flex justify-between items-start">
+                        <div class="w-12 h-12 bg-slate-900 rounded-2xl flex items-center justify-center text-blue-500 border border-white/5">
+                            <i class="fas ${r.type === 'Lab' ? 'fa-microchip' : 'fa-landmark-dome'} text-xl"></i>
+                        </div>
+                        <div class="flex flex-col items-end gap-2">
+                            <span class="badge px-3 py-1 bg-white/5 rounded-full text-[9px] font-black uppercase tracking-widest ${r.status === 'Available' ? 'text-emerald-400' : 'text-rose-400'}">
+                                <span class="status-dot ${r.status === 'Available' ? 'bg-emerald-400' : 'bg-rose-400'} mr-2"></span>${r.status}
+                            </span>
+                            ${r.needs_approval ? `<span class="text-[8px] bg-amber-500/10 text-amber-500 border border-amber-500/20 px-2 py-0.5 rounded font-black uppercase italic tracking-tighter"><i class="fas fa-lock text-[7px] mr-1"></i> Restricted</span>` : ''}
+                        </div>
+                    </div>
+                    <div>
+                        <h3 class="text-xl font-bold uppercase tracking-tighter">${r.name}</h3>
+                        <p class="text-[10px] text-slate-500 font-black uppercase tracking-[0.2em] mt-1">${r.type} Node</p>
+                    </div>
+                    <button onclick="${r.status === 'Available' ? `openBooking(${r.id}, '${r.name}')` : ''}" 
+                        class="w-full py-3 rounded-xl font-black text-[10px] uppercase tracking-[0.2em] transition-all 
+                        ${r.status === 'Available' ? 'bg-blue-600/10 text-blue-400 border border-blue-500/20 hover:bg-blue-600 hover:text-white' : 'bg-slate-900 text-slate-600 border border-white/5 cursor-not-allowed'}">
+                        ${r.status === 'Available' ? (r.needs_approval ? 'Request Access' : 'Secure Reservation') : 'System Busy'}
+                    </button>
                 </div>
-                <div class="flex flex-col items-end gap-2">
-                    <span class="badge px-3 py-1 bg-white/5 rounded-full text-[9px] font-black uppercase tracking-widest ${r.status === 'Available' ? 'text-emerald-400' : 'text-rose-400'}">
-                        <span class="status-dot ${r.status === 'Available' ? 'bg-emerald-400' : 'bg-rose-400'} mr-2"></span>${r.status}
-                    </span>
-                    ${r.needs_approval ? `<span class="text-[8px] bg-amber-500/10 text-amber-500 border border-amber-500/20 px-2 py-0.5 rounded font-black uppercase italic tracking-tighter"><i class="fas fa-lock text-[7px] mr-1"></i> Restricted</span>` : ''}
-                </div>
-            </div>
-            <div>
-                <h3 class="text-xl font-bold uppercase tracking-tighter">${r.name}</h3>
-                <p class="text-[10px] text-slate-500 font-black uppercase tracking-[0.2em] mt-1">${r.type} Node</p>
-            </div>
-            <button onclick="${r.status === 'Available' ? `openBooking(${r.id}, '${r.name}')` : ''}" 
-                class="w-full py-3 rounded-xl font-black text-[10px] uppercase tracking-[0.2em] transition-all 
-                ${r.status === 'Available' ? 'bg-blue-600/10 text-blue-400 border border-blue-500/20 hover:bg-blue-600 hover:text-white' : 'bg-slate-900 text-slate-600 border border-white/5 cursor-not-allowed'}">
-                ${r.status === 'Available' ? (r.needs_approval ? 'Request Access' : 'Secure Reservation') : 'System Busy'}
-            </button>
-        </div>
-    `).join('');
+            `).join('');
         }
 
         function openBooking(id, name) {
             activeResId = id;
             document.getElementById('modal-res-name').innerText = name;
+
+            // Reset modal state to default (clearing past data and unlocking button)
+            document.getElementById('book-start').value = '';
+            document.getElementById('book-end').value = '';
+            
+            isBooking = false;
+            const btn = document.getElementById('confirm-btn');
+            btn.innerHTML = "Confirm Reservation";
+            btn.classList.remove('opacity-50', 'cursor-not-allowed', 'pointer-events-none');
+
             document.getElementById('booking-modal').classList.remove('hidden');
         }
 
@@ -156,25 +221,56 @@
         }
 
         async function confirmBooking() {
+            // Guard clause to drop subsequent clicks if already booking
+            if (isBooking) return; 
+
             const start = document.getElementById('book-start').value;
             const end = document.getElementById('book-end').value;
 
-            if (!start || !end) return alert("Define time-window first.");
+            if (!start || !end) {
+                showNotification("Define time-window first.", "error");
+                return;
+            }
 
-            const res = await fetch(`${API_BASE}/api/resources/book`, {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                credentials: 'include',
-                body: JSON.stringify({ resource_id: activeResId, start_time: start, end_time: end })
-            });
-            const data = await res.json();
-            if (data.success) {
-                alert(data.message);
-                location.reload();
-            } else {
-                alert(data.error);
+            // Immediately lock state and modify button appearance
+            isBooking = true;
+            const btn = document.getElementById('confirm-btn');
+            btn.innerHTML = `<i class="fas fa-circle-notch fa-spin mr-2"></i> Processing...`;
+            btn.classList.add('opacity-50', 'cursor-not-allowed', 'pointer-events-none');
+
+            try {
+                const res = await fetch(`${API_BASE}/api/resources/book`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    credentials: 'include',
+                    body: JSON.stringify({ resource_id: activeResId, start_time: start, end_time: end })
+                });
+                
+                const data = await res.json();
+                
+                if (data.success) {
+                    showNotification(data.message, "success");
+                    // Minor delay before reload so the user sees the success toast
+                    setTimeout(() => location.reload(), 1500);
+                } else {
+                    showNotification(data.error, "error");
+                    
+                    // Unlock button if it failed so user can edit and re-try
+                    isBooking = false;
+                    btn.innerHTML = "Confirm Reservation";
+                    btn.classList.remove('opacity-50', 'cursor-not-allowed', 'pointer-events-none');
+                }
+            } catch (e) {
+                console.error(e);
+                showNotification("Network Error: Action Failed", "error");
+                
+                // Unlock button on catch error
+                isBooking = false;
+                btn.innerHTML = "Confirm Reservation";
+                btn.classList.remove('opacity-50', 'cursor-not-allowed', 'pointer-events-none');
             }
         }
+
         function filterResources() {
             const query = document.getElementById('res-search').value.toLowerCase();
             document.querySelectorAll('.res-card').forEach(card => {
