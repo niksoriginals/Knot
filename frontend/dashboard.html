@@ -135,44 +135,63 @@
     </main>
 
     <script>
-        const API_BASE = "https://apiknot.niksoriginals.in";
-        async function fetchDashboardData() {
-            try {
-                document.getElementById('userName').innerText = "Nikhil Yadav";
-                document.getElementById('greetName').innerText = "Nikhil";
-                document.getElementById('userName').classList.remove('animate-pulse');
+    const API_BASE = "https://apiknot.niksoriginals.in";
 
-                // Simulate fetching live status for a key resource (ID 1 as example)
-                const res = await fetch(`${API_BASE}/api/resource-status/1`);
-                const result = await res.json();
-                
+    async function fetchDashboardData() {
+        try {
+            // 1. Fetch User Identity (Real Name & Email)
+            const profileRes = await fetch(`${API_BASE}/api/user-profile`, {
+                credentials: 'include' // Cookies bhejni zaroori hain
+            });
+            const profile = await profileRes.json();
+
+            if (profile.success) {
+                document.getElementById('userName').innerText = profile.name;
+                document.getElementById('greetName').innerText = profile.name.split(' ')[0]; // Sirf First Name
+                document.getElementById('userEmail').innerText = profile.email;
+                document.getElementById('userName').classList.remove('animate-pulse');
+            } else {
+                // Agar session expire ho gaya toh login pe bhej do
+                window.location.href = "/login";
+            }
+
+            // 2. Fetch Live Resource Status (ID 1 as example)
+            const statusRes = await fetch(`${API_BASE}/api/resource-status/1`, {
+                credentials: 'include'
+            });
+            const result = await statusRes.json();
+            
+            if (result.success) {
+                const data = result.data;
                 const statusHtml = `
-                    <div class="flex items-center justify-between p-4 bg-slate-900/40 rounded-2xl border border-white/5">
+                    <div class="flex items-center justify-between p-4 bg-slate-900/40 rounded-2xl border border-white/5 transition-all hover:bg-slate-900/60">
                         <div class="flex items-center gap-4">
                             <div class="w-10 h-10 brand-gradient rounded-xl flex items-center justify-center">
-                                <i class="fas fa-desktop"></i>
+                                <i class="fas fa-desktop text-white"></i>
                             </div>
                             <div>
-                                <p class="font-bold">${result.data.name || 'Primary Lab'}</p>
-                                <p class="text-xs text-slate-500">${result.data.type || 'Laboratory'}</p>
+                                <p class="font-bold text-slate-200">${data.name}</p>
+                                <p class="text-xs text-slate-500">${data.type}</p>
                             </div>
                         </div>
                         <div class="text-right">
-                            <span class="px-3 py-1 rounded-full text-[10px] font-bold ${result.data.status === 'Available' ? 'bg-green-500/10 text-green-500' : 'bg-rose-500/10 text-rose-500'}">
-                                ${result.data.status.toUpperCase()}
+                            <span class="px-3 py-1 rounded-full text-[10px] font-black tracking-wider ${data.status === 'Available' ? 'bg-green-500/10 text-green-500' : 'bg-rose-500/10 text-rose-500'}">
+                                ${data.status.toUpperCase()}
                             </span>
+                            ${data.occupied_by ? `<p class="text-[9px] text-slate-500 mt-1">By: ${data.occupied_by}</p>` : ''}
                         </div>
                     </div>
                 `;
                 document.getElementById('liveStatusList').innerHTML = statusHtml;
-
-            } catch (err) {
-                console.error("Dashboard Sync Error:", err);
-                document.getElementById('liveStatusList').innerHTML = '<p class="text-slate-600 italic">Syncing live data...</p>';
             }
-        }
 
-        window.onload = fetchDashboardData;
-    </script>
+        } catch (err) {
+            console.error("Dashboard Sync Error:", err);
+            document.getElementById('liveStatusList').innerHTML = '<p class="text-rose-400 text-xs p-4 italic">System Offline. Check Connection.</p>';
+        }
+    }
+
+    window.onload = fetchDashboardData;
+</script>
 </body>
 </html>

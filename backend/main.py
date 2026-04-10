@@ -226,6 +226,26 @@ def update_profile():
     except Exception as e:
         print(f"!!! [UPDATE ERROR] {e}")
         return jsonify({"error": "Internal Server Error"}), 500
+    
+
+@app.route("/api/user-profile", methods=["GET"])
+def get_user_profile():
+    email = session.get("user")
+    if not email:
+        return jsonify({"error": "Not logged in"}), 401
+    
+    conn = get_db()
+    user = conn.execute("SELECT name, email, department FROM users WHERE email = ?", (email,)).fetchone()
+    conn.close()
+    
+    if user:
+        return jsonify({
+            "success": True,
+            "name": user['name'] or "Student",
+            "email": user['email'],
+            "department": user['department'] or "Not Set"
+        })
+    return jsonify({"error": "User not found"}), 404
 
 
 # --- 5. ADMIN & SYSTEM ---
