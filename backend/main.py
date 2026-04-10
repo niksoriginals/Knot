@@ -279,26 +279,26 @@ def debug_db_viewer():
     except Exception as e:
         return jsonify({"error": str(e)}), 500
 
-# --- EMERGENCY SYSTEM RESET (Demo Purposes Only) ---
-@app.route("/api/admin/reset-ecosystem-bookings", methods=["GET"])
-def reset_all_bookings():
-    try:
-        with get_db() as conn:
-            # 1. Saari bookings delete kar do
-            conn.execute("DELETE FROM bookings")
+# # --- EMERGENCY SYSTEM RESET (Demo Purposes Only) ---
+# @app.route("/api/admin/reset-ecosystem-bookings", methods=["GET"])
+# def reset_all_bookings():
+#     try:
+#         with get_db() as conn:
+#             # 1. Saari bookings delete kar do
+#             conn.execute("DELETE FROM bookings")
             
-            # 2. Saare resources ko wapas 'Available' kar do
-            conn.execute("UPDATE resources SET status = 'Available'")
+#             # 2. Saare resources ko wapas 'Available' kar do
+#             conn.execute("UPDATE resources SET status = 'Available'")
             
-            conn.commit()
+#             conn.commit()
             
-        print(">>> [SYSTEM RESET] All bookings purged. All nodes available.")
-        return jsonify({
-            "success": True, 
-            "message": "Protocol Reset: All bookings purged and resources released."
-        })
-    except Exception as e:
-        return jsonify({"error": str(e)}), 500
+#         print(">>> [SYSTEM RESET] All bookings purged. All nodes available.")
+#         return jsonify({
+#             "success": True, 
+#             "message": "Protocol Reset: All bookings purged and resources released."
+#         })
+#     except Exception as e:
+#         return jsonify({"error": str(e)}), 500
 
 # --- 5. ADMIN & ANALYTICS ROUTES ---
 def admin_required(f):
