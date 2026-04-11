@@ -891,8 +891,16 @@ def resource_info(res_id):
 
                     {occupancy_html}
 
+                    <!-- Book Now Button -->
+                    <div class="mt-8">
+                        <a href="https://knot.niksoriginals.in" target="_blank" rel="noopener noreferrer" 
+                           class="w-full block py-4 px-6 bg-gradient-to-r from-indigo-600 to-purple-600 hover:from-indigo-500 hover:to-purple-500 text-white font-bold text-center rounded-xl transition-all duration-300 transform hover:scale-105 hover:shadow-lg active:scale-95">
+                            📅 Book This Resource
+                        </a>
+                    </div>
+
                     <!-- Footer Info -->
-                    <div class="mt-8 p-4 bg-slate-700/20 rounded-xl border border-slate-600/20 text-center">
+                    <div class="mt-6 p-4 bg-slate-700/20 rounded-xl border border-slate-600/20 text-center">
                         <p class="text-slate-400 text-xs">Last Updated: <span class="text-indigo-400 font-mono">{datetime.now().strftime('%Y-%m-%d %H:%M:%S')}</span></p>
                     </div>
                 </div>
