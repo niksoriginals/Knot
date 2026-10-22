@@ -3,3 +3,21 @@ BACKEND_GUIDE.html
 BACKEND_GUIDE.md
 backend/BACKEND_GUIDE.html
 backend/BACKEND_GUIDE.md
+
+# Virtual Environment
+venv/
+.venv/
+env/
+
+# Python cache
+__pycache__/
+*.py[cod]
+
+# SQLite Databases
+*.db
+nofy.db
+backend/nofy.db
+
+# Environment Variables
+.env
+*.env

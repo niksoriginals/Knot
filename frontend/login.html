@@ -226,28 +226,44 @@
     </div>
 
     <script>
-        const API_BASE = "https://apiknot.niksoriginals.in";
+        const API_BASE = (window.location.hostname === "localhost" || window.location.hostname === "127.0.0.1")
+            ? "http://localhost:5000"
+            : "https://apiknot.niksoriginals.in";
         const DASHBOARD_URL = "/dashboard";
         let timerInterval;
+
+        // --- AUTH HEADERS HELPER ---
+        function getAuthHeaders(customHeaders = {}) {
+            const token = localStorage.getItem('knot_token');
+            const headers = { ...customHeaders };
+            if (token) {
+                headers['Authorization'] = `Bearer ${token}`;
+            }
+            return headers;
+        }
 
         // --- AUTO REDIRECT IF ALREADY LOGGED IN ---
         async function checkExistingSession() {
             try {
-                const res = await fetch(`${API_BASE}/api/user-profile`, { credentials: 'include' });
+                const res = await fetch(`${API_BASE}/api/user-profile`, { 
+                    headers: getAuthHeaders(),
+                    credentials: 'include' 
+                });
                 if (res.ok) {
                     const data = await res.json();
-                    const role = data.role.toLowerCase();
+                    const role = (data.role || 'student').toLowerCase();
                     
-                    if (role === 'admin') {
+                    if (['admin', 'hod', 'dean'].includes(role)) {
                         window.location.href = "/admin";
-                    } else if (role === 'hod' || role === 'dean') {
-                        window.location.href = "/management";
                     } else {
                         window.location.href = "/dashboard";
                     }
+                } else if (res.status === 401) {
+                    localStorage.removeItem('knot_token');
+                    localStorage.removeItem('knot_user');
                 }
             } catch (err) {
-                console.log("No existing session");
+                console.log("No existing session or network offline");
             }
         }
         
@@ -273,8 +289,8 @@
         }
 
         async function sendOTP() {
-            const email = document.getElementById('email').value;
-            if (!email.endsWith("@its.edu.in")) return showToast("Use your college email ID!", "error");
+            const email = document.getElementById('email').value.trim().toLowerCase();
+            if (!email.endsWith("@its.edu.in")) return showToast("Use your college email ID (@its.edu.in)!", "error");
 
             toggleLoader(true);
             try {
@@ -288,14 +304,17 @@
                     showSection('otp-section');
                     startTimer();
                     showToast("OTP sent successfully!", "success");
-                } else { showToast("Could not send code.", "error"); }
+                } else { 
+                    const errData = await res.json().catch(() => ({}));
+                    showToast(errData.error || "Could not send code.", "error"); 
+                }
             } catch (err) { showToast("Server connection failed.", "error"); }
             toggleLoader(false);
         }
 
         async function verifyOTP() {
-            const email = document.getElementById('email').value;
-            const otp = document.getElementById('otp').value;
+            const email = document.getElementById('email').value.trim().toLowerCase();
+            const otp = document.getElementById('otp').value.trim();
             if (otp.length < 6) return showToast("Enter 6-digit code", "error");
 
             toggleLoader(true);
@@ -308,22 +327,22 @@
                 });
                 const data = await res.json();
 
-                if (res.ok) {
+                if (res.ok && data.success) {
+                    if (data.token) {
+                        localStorage.setItem('knot_token', data.token);
+                    }
+                    if (data.user) {
+                        localStorage.setItem('knot_user', JSON.stringify(data.user));
+                    }
+
                     if (data.is_new_user) {
                         showSection('name-section');
                         showToast("Identity Verified!", "success");
                     } else {
                         showToast("Access Granted!", "success");
-                        const profRes = await fetch(`${API_BASE}/api/user-profile`, { credentials: 'include' });
-                        const profData = await profRes.json();
-
-                        let targetUrl = "/dashboard"; 
-                        const role = profData.role.toLowerCase();
-
-                        if (role === 'admin') targetUrl = "/admin";
-                        else if (role === 'hod' || role === 'dean') targetUrl = "/admin";
-
-                        setTimeout(() => window.location.href = targetUrl, 500);
+                        const role = (data.user?.role || 'student').toLowerCase();
+                        const targetUrl = ['admin', 'hod', 'dean'].includes(role) ? "/admin" : "/dashboard";
+                        setTimeout(() => window.location.href = targetUrl, 400);
                     }
                 } else {
                     showToast(data.error || "Invalid Code", "error");
@@ -335,7 +354,7 @@
         }
 
         async function updateProfile() {
-            const name = document.getElementById('fullname').value;
+            const name = document.getElementById('fullname').value.trim();
             const dept = document.getElementById('dept-select').value;
             if (!name || !dept) return showToast("Please fill all fields", "error");
 
@@ -343,29 +362,24 @@
             try {
                 const res = await fetch(`${API_BASE}/api/update-profile`, {
                     method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
+                    headers: getAuthHeaders({ 'Content-Type': 'application/json' }),
                     credentials: 'include',
                     body: JSON.stringify({ name, department: dept })
                 });
+                const data = await res.json();
 
-                if (res.ok) {
+                if (res.ok && data.success) {
                     showToast("Profile Initialized!", "success");
-
-                    
-                    const profRes = await fetch(`${API_BASE}/api/user-profile`, { credentials: 'include' });
-                    const profData = await profRes.json();
-
-                    let targetUrl = "/dashboard";
-                    const role = profData.role.toLowerCase();
-
-                    if (role === 'admin') targetUrl = "/admin";
-                    else if (role === 'hod' || role === 'dean') targetUrl = "/management";
-
+                    if (data.user) {
+                        localStorage.setItem('knot_user', JSON.stringify(data.user));
+                    }
+                    const role = (data.user?.role || 'student').toLowerCase();
+                    const targetUrl = ['admin', 'hod', 'dean'].includes(role) ? "/admin" : "/dashboard";
                     setTimeout(() => {
                         window.location.href = targetUrl;
-                    }, 1000);
+                    }, 500);
                 } else {
-                    showToast("Update failed", "error");
+                    showToast(data.error || "Update failed", "error");
                 }
             } catch (err) {
                 showToast("Sync failed.", "error");

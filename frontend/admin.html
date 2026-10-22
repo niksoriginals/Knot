@@ -204,9 +204,12 @@
         </nav>
 
         <!-- Breakout Logic -->
-        <div class="p-6 border-t border-white/5 relative z-10 mb-2">
-            <button onclick="location.href='/dashboard'" class="w-full flex items-center justify-center gap-3 p-4 bg-white/[0.03] border border-white/10 rounded-2xl text-xs font-black uppercase tracking-widest hover:bg-rose-500/10 hover:text-rose-400 hover:border-rose-500/30 transition-all text-slate-400">
-                <i class="fas fa-power-off"></i> KNOT Ecosystem
+        <div class="p-6 border-t border-white/5 relative z-10 mb-2 space-y-3">
+            <button onclick="location.href='/dashboard'" class="w-full flex items-center justify-center gap-3 p-3 bg-white/[0.03] border border-white/10 rounded-2xl text-xs font-black uppercase tracking-widest hover:bg-indigo-500/10 hover:text-indigo-400 hover:border-indigo-500/30 transition-all text-slate-400">
+                <i class="fas fa-arrow-left"></i> User Dashboard
+            </button>
+            <button onclick="handleLogout()" class="w-full flex items-center justify-center gap-3 p-3 bg-rose-500/10 border border-rose-500/20 rounded-2xl text-xs font-black uppercase tracking-widest hover:bg-rose-500/20 hover:text-rose-300 hover:border-rose-500/40 transition-all text-rose-400">
+                <i class="fas fa-power-off"></i> Terminate Session
             </button>
         </div>
     </aside>
@@ -407,7 +410,68 @@
 
     <!-- CORE LOGIC / AJAX CALLS -->
     <script>
-        const API_BASE = "https://apiknot.niksoriginals.in";
+        const API_BASE = (window.location.hostname === "localhost" || window.location.hostname === "127.0.0.1")
+            ? "http://localhost:5000"
+            : "https://apiknot.niksoriginals.in";
+
+        function getAuthHeaders(customHeaders = {}) {
+            const token = localStorage.getItem('knot_token');
+            const headers = { ...customHeaders };
+            if (token) {
+                headers['Authorization'] = `Bearer ${token}`;
+            }
+            return headers;
+        }
+
+        async function adminFetch(url, options = {}) {
+            const headers = getAuthHeaders(options.headers || {});
+            const opts = {
+                ...options,
+                headers,
+                credentials: 'include'
+            };
+            const res = await fetch(url, opts);
+            if (res.status === 401) {
+                showNotification("Session Expired: Redirecting to login...", "error");
+                localStorage.removeItem('knot_token');
+                localStorage.removeItem('knot_user');
+                setTimeout(() => window.location.href = "/login", 1200);
+                throw new Error("Unauthorized");
+            }
+            return res;
+        }
+
+        async function handleLogout() {
+            if(!confirm("Terminate Administrative Session?")) return;
+            try {
+                await fetch(`${API_BASE}/auth/logout`, {
+                    method: 'POST',
+                    headers: getAuthHeaders(),
+                    credentials: 'include'
+                });
+            } catch(e) {}
+            localStorage.removeItem('knot_token');
+            localStorage.removeItem('knot_user');
+            window.location.href = "/login";
+        }
+
+        async function checkAdminSession() {
+            try {
+                const res = await adminFetch(`${API_BASE}/api/user-profile`);
+                if (res.ok) {
+                    const user = await res.json();
+                    const role = (user.role || '').toLowerCase();
+                    if (!['admin', 'hod', 'dean'].includes(role)) {
+                        showNotification("Access Denied: Administrative clearance required.", "error");
+                        setTimeout(() => window.location.href = "/dashboard", 1200);
+                        return;
+                    }
+                    fetchAnalytics();
+                }
+            } catch (e) {
+                // adminFetch will redirect on 401
+            }
+        }
 
         // --- NOTIFICATION ENGINE ---
         function showNotification(message, type = 'info') {
@@ -794,7 +858,7 @@
             );
         }
 
-        window.onload = () => fetchAnalytics();
+        window.onload = checkAdminSession;
     </script>
 </body>
 

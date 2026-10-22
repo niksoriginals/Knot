@@ -6,26 +6,100 @@ from functools import wraps
 import sqlite3
 import os
 import random
+import hmac
+import hashlib
+import base64
+import json
+import time
 
 app = Flask(__name__)
 
-# --- 1. CONFIGURATION ---
+# Auto-load .env if present (in root or backend)
+for env_candidate in [".env", "../.env", "backend/.env"]:
+    if os.path.exists(env_candidate):
+        with open(env_candidate, "r", encoding="utf-8") as f:
+            for line in f:
+                line = line.strip()
+                if line and not line.startswith("#") and "=" in line:
+                    k, v = line.split("=", 1)
+                    os.environ.setdefault(k.strip(), v.strip().strip('"\''))
+        break
 
 resend.api_key = os.getenv("RESEND_API_KEY", "re_xxxxxxxxx") 
 
 app.secret_key = os.getenv("FLASK_SECRET", "NISO_KNOT_2026_SECURE")
 
-app.config.update(
-    SESSION_COOKIE_HTTPONLY=True,
-    SESSION_COOKIE_SAMESITE="None",
-    SESSION_COOKIE_SECURE=True,    
-    PERMANENT_SESSION_LIFETIME=timedelta(hours=8)
-)
+IS_DEV = os.getenv("FLASK_ENV") == "development" or os.environ.get("PORT") is None
 
-CORS(app, supports_credentials=True, origins=[
+ALLOWED_ORIGINS = [
+    "https://knot.niksoriginals.in",
+    "https://admin.niksoriginals.in",
+    "http://localhost:3000",
+    "http://127.0.0.1:3000",
+    "http://localhost:5000",
+    "http://127.0.0.1:5000",
+    "http://localhost:5500",
+    "http://127.0.0.1:5500",
+    "http://localhost:8000",
+    "http://127.0.0.1:8000"
+] if IS_DEV else [
     "https://knot.niksoriginals.in",
     "https://admin.niksoriginals.in"
-])
+]
+
+if IS_DEV:
+    app.config.update(
+        SESSION_COOKIE_HTTPONLY=True,
+        SESSION_COOKIE_SAMESITE="Lax",
+        SESSION_COOKIE_SECURE=False,
+        PERMANENT_SESSION_LIFETIME=timedelta(hours=8)
+    )
+else:
+    app.config.update(
+        SESSION_COOKIE_HTTPONLY=True,
+        SESSION_COOKIE_SAMESITE="None",
+        SESSION_COOKIE_SECURE=True,    
+        PERMANENT_SESSION_LIFETIME=timedelta(hours=8)
+    )
+
+CORS(app, supports_credentials=True, origins=ALLOWED_ORIGINS, allow_headers=["Content-Type", "Authorization"])
+
+# --- TOKEN & AUTH HELPERS (Hybrid Auth: Bearer Token + Cookie) ---
+def generate_session_token(email):
+    """Generate signed, tamper-proof bearer token valid for 8 hours."""
+    payload = {
+        "email": email,
+        "exp": int(time.time()) + (8 * 3600)
+    }
+    payload_b64 = base64.urlsafe_b64encode(json.dumps(payload).encode()).decode()
+    sig = hmac.new(app.secret_key.encode(), payload_b64.encode(), hashlib.sha256).hexdigest()
+    return f"{payload_b64}.{sig}"
+
+def verify_session_token(token):
+    """Verify bearer token signature and expiration."""
+    try:
+        if not token or "." not in token:
+            return None
+        payload_b64, sig = token.rsplit(".", 1)
+        expected_sig = hmac.new(app.secret_key.encode(), payload_b64.encode(), hashlib.sha256).hexdigest()
+        if not hmac.compare_digest(sig, expected_sig):
+            return None
+        payload = json.loads(base64.urlsafe_b64decode(payload_b64.encode()).decode())
+        if time.time() > payload.get("exp", 0):
+            return None
+        return payload.get("email")
+    except Exception:
+        return None
+
+def get_authenticated_user():
+    """Extract authenticated email from Authorization header OR Flask cookie session."""
+    auth_header = request.headers.get("Authorization")
+    if auth_header and auth_header.startswith("Bearer "):
+        token = auth_header.split(" ", 1)[1].strip()
+        email = verify_session_token(token)
+        if email:
+            return email
+    return session.get("user")
 
 # Database Path (Using your mounted volume)
 DB_PATH = "/data/knot.db"
@@ -94,6 +168,9 @@ def execute_otp_flow(email):
                      (email, otp, expiry))
         conn.commit()
         conn.close()
+        print(f"\n==========================================")
+        print(f"🔑 [KNOT OTP]: {otp} (for {email})")
+        print(f"==========================================\n")
     except Exception as e:
         return {"error": "Database Error"}, 500
     try:
@@ -146,32 +223,58 @@ def resend_otp():
 @app.route("/auth/verify-otp", methods=["POST"])
 def verify_otp():
     data = request.json or {}
-    email = data.get("email")
-    user_otp = data.get("otp")
+    email = data.get("email", "").strip().lower()
+    user_otp = data.get("otp", "").strip()
 
-    conn = get_db()
-    user = conn.execute("SELECT name, role FROM users WHERE email = ?", (email,)).fetchone()
-    conn.close()
+    if not email or not user_otp:
+        return jsonify({"error": "Email and OTP are required"}), 400
 
-
-    def finalize_login(email_addr, db_user):
-        session["user"] = email_addr
-        session.permanent = True
+    def finalize_login(email_addr):
+        conn = get_db()
+        db_user = conn.execute("SELECT id, name, email, role, department FROM users WHERE email = ?", (email_addr,)).fetchone()
         
-        if db_user:
-            session["user_role"] = db_user['role']
+        ADMIN_EMAILS = ['admin@its.edu.in', 'nikso@its.edu.in']
+        
+        # Ensure user record exists in database
+        if not db_user:
+            default_role = 'admin' if email_addr in ADMIN_EMAILS else 'student'
+            conn.execute("INSERT INTO users (email, role) VALUES (?, ?)", (email_addr, default_role))
+            conn.commit()
+            db_user = conn.execute("SELECT id, name, email, role, department FROM users WHERE email = ?", (email_addr,)).fetchone()
+        elif email_addr in ADMIN_EMAILS and db_user['role'] != 'admin':
+            conn.execute("UPDATE users SET role = 'admin' WHERE email = ?", (email_addr,))
+            conn.commit()
+            db_user = conn.execute("SELECT id, name, email, role, department FROM users WHERE email = ?", (email_addr,)).fetchone()
+        conn.close()
 
-            if db_user['role'] == 'admin':
-                session["admin"] = True
-        else:
-            session["user_role"] = "student"
-            
+        user_role = db_user['role'] if db_user else 'student'
+        session["user"] = email_addr
+        session["user_role"] = user_role
+        if user_role == 'admin':
+            session["admin"] = True
+        session.permanent = True
+
+        token = generate_session_token(email_addr)
         is_new = True if not db_user or not db_user['name'] else False
-        return jsonify({"success": True, "is_new_user": is_new})
 
+        print(f">>> [AUTH SUCCESS] Logged in: {email_addr} (Role: {user_role}, IsNew: {is_new})")
+        return jsonify({
+            "success": True,
+            "token": token,
+            "is_new_user": is_new,
+            "user": {
+                "name": db_user['name'] if db_user else None,
+                "email": email_addr,
+                "role": user_role,
+                "department": db_user['department'] if db_user else "ITS"
+            }
+        })
+
+    # 1. Test OTP bypass
     if user_otp == "123456":
-        return finalize_login(email, user)
+        return finalize_login(email)
     
+    # 2. Real OTP verification
     conn = get_db()
     res = conn.execute("SELECT otp_code, expiry FROM otps WHERE email = ?", (email,)).fetchone()
     conn.close()
@@ -179,61 +282,53 @@ def verify_otp():
     if res:
         expiry_dt = datetime.strptime(res['expiry'], '%Y-%m-%d %H:%M:%S')
         if res['otp_code'] == user_otp and datetime.now() < expiry_dt:
-            if not user:
-                conn = get_db()
-                conn.execute("INSERT INTO users (email, role) VALUES (?, 'student')", (email,))
-                conn.commit()
-                conn.close()
-            
-            print(f">>> [AUTH] User {email} verified successfully.")
-            return finalize_login(email, user)
+            return finalize_login(email)
     
-    return jsonify({"error": "Invalid or expired OTP"}), 401
+    return jsonify({"error": "Invalid or expired verification code."}), 401
 
 @app.route("/api/update-profile", methods=["POST"])
 def update_profile():
-    email = session.get("user")
-    print(f">>> [DEBUG] Attempting update for session user: {email}")
-    
+    email = get_authenticated_user()
     if not email:
         return jsonify({"error": "Unauthorized session"}), 401
 
     data = request.json or {}
-    new_name = data.get("name")
-    new_dept = data.get("department")
+    new_name = data.get("name", "").strip()
+    new_dept = data.get("department", "").strip()
 
     if not new_name:
         return jsonify({"error": "Name is mandatory"}), 400
 
     try:
         conn = get_db()
-        user = conn.execute("SELECT email FROM users WHERE email = ?", (email,)).fetchone()
-        
-        if not user:
-            conn.execute("INSERT INTO users (email, name, department) VALUES (?, ?, ?)", 
-                         (email, new_name, new_dept))
-        else:
-            conn.execute('''
-                UPDATE users 
-                SET name = ?, department = ? 
-                WHERE email = ?
-            ''', (new_name, new_dept, email))
-        
+        conn.execute('''
+            UPDATE users 
+            SET name = ?, department = ? 
+            WHERE email = ?
+        ''', (new_name, new_dept or "ITS", email))
         conn.commit()
+        user = conn.execute("SELECT name, email, role, department FROM users WHERE email = ?", (email,)).fetchone()
         conn.close()
         
         print(f">>> [SUCCESS] {email} profile synced to DB.")
-        return jsonify({"success": True})
-    
+        return jsonify({
+            "success": True,
+            "user": {
+                "name": user['name'] if user else new_name,
+                "email": email,
+                "role": user['role'] if user else "student",
+                "department": user['department'] if user else new_dept
+            }
+        })
     except Exception as e:
         print(f"!!! [DATABASE ERROR] {e}")
         return jsonify({"error": str(e)}), 500
-    
 
 @app.route("/api/user-profile", methods=["GET"])
 def get_user_profile():
-    email = session.get("user")
-    if not email: return jsonify({"error": "Unauthorized"}), 401
+    email = get_authenticated_user()
+    if not email:
+        return jsonify({"error": "Unauthorized"}), 401
     
     conn = get_db()
     user = conn.execute("SELECT name, email, role, department FROM users WHERE email = ?", (email,)).fetchone()
@@ -244,7 +339,7 @@ def get_user_profile():
             "success": True,
             "name": user['name'] or "Verified User",
             "email": user['email'],
-            "role": user['role'], 
+            "role": user['role'] or "student", 
             "department": user['department'] or "ITS"
         })
     return jsonify({"error": "User not found"}), 404
@@ -301,7 +396,7 @@ def reset_all_bookings():
 def admin_required(f):
     @wraps(f)
     def decorated_function(*args, **kwargs):
-        user_email = session.get("user")
+        user_email = get_authenticated_user()
         
         if not user_email:
             return jsonify({"error": "Session Expired. Please login again."}), 401
@@ -499,7 +594,7 @@ def get_marketplace():
 # --- MARKETPLACE: POST NEW ITEM ---
 @app.route("/api/marketplace/add", methods=["POST"])
 def add_marketplace_item():
-    email = session.get("user")
+    email = get_authenticated_user()
     if not email: return jsonify({"error": "Unauthorized"}), 401
     
     data = request.json
@@ -583,7 +678,7 @@ def get_all_resources():
 # --- RESOURCE API: BOOKING ---
 @app.route("/api/resources/book", methods=["POST"])
 def book_resource():
-    email = session.get("user")
+    email = get_authenticated_user()
     if not email: return jsonify({"error": "Unauthorized"}), 401
 
     data = request.json

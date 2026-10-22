@@ -360,25 +360,44 @@
 
     <!-- KNOT Backend Integrity Engine (100% Core Logic Preserved) -->
     <script>
-        const API_BASE = "https://apiknot.niksoriginals.in";
+        const API_BASE = (window.location.hostname === "localhost" || window.location.hostname === "127.0.0.1")
+            ? "http://localhost:5000"
+            : "https://apiknot.niksoriginals.in";
+
+        function getAuthHeaders(customHeaders = {}) {
+            const token = localStorage.getItem('knot_token');
+            const headers = { ...customHeaders };
+            if (token) {
+                headers['Authorization'] = `Bearer ${token}`;
+            }
+            return headers;
+        }
 
         async function fetchDashboard() {
             try {
-                const profileRes = await fetch(`${API_BASE}/api/user-profile`, { credentials: 'include' });
+                const profileRes = await fetch(`${API_BASE}/api/user-profile`, { 
+                    headers: getAuthHeaders(),
+                    credentials: 'include' 
+                });
                 
-                if (profileRes.status === 401) {
+                if (profileRes.status === 401 || !profileRes.ok) {
+                    localStorage.removeItem('knot_token');
+                    localStorage.removeItem('knot_user');
                     window.location.href = "/login";
                     return;
                 }
 
                 const profile = await profileRes.json();
                 if (profile && profile.success) {
+                    // Cache profile
+                    localStorage.setItem('knot_user', JSON.stringify(profile));
+
                     // Critical DOM Identifiers mapping
                     document.getElementById('userName').innerText = profile.name || "Student";
                     document.getElementById('greetName').innerText = profile.name ? profile.name.split(' ')[0] : "Student";
                     document.getElementById('userEmail').innerText = profile.email;
                     
-                    const role = profile.role.toLowerCase();
+                    const role = (profile.role || 'student').toLowerCase();
                     const badgeClass = `badge badge-${role}`;
                     
                     const badgeEl = document.getElementById('userBadge');
@@ -404,9 +423,15 @@
         async function handleLogout() {
             if(!confirm("Terminate Secure Session?")) return;
             try {
-                await fetch(`${API_BASE}/auth/logout`, { method: 'POST', credentials: 'include' });
-                window.location.href = "/login";
-            } catch (e) { window.location.href = "/login"; }
+                await fetch(`${API_BASE}/auth/logout`, { 
+                    method: 'POST', 
+                    headers: getAuthHeaders(),
+                    credentials: 'include' 
+                });
+            } catch (e) { }
+            localStorage.removeItem('knot_token');
+            localStorage.removeItem('knot_user');
+            window.location.href = "/login";
         }
 
         // Engage Engine Complete
