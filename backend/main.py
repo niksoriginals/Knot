@@ -279,15 +279,12 @@ def debug_db_viewer():
     except Exception as e:
         return jsonify({"error": str(e)}), 500
 
-# --- EMERGENCY SYSTEM RESET (Demo Purposes Only) ---
+# --- EMERGENCY SYSTEM RESET (Demo Purposes Only As Wee Need To Clear Booking) ---
 @app.route("/api/admin/reset-ecosystem-bookings", methods=["GET"])
 def reset_all_bookings():
     try:
         with get_db() as conn:
-            # 1. Saari bookings delete kar do
             conn.execute("DELETE FROM bookings")
-            
-            # 2. Saare resources ko wapas 'Available' kar do
             conn.execute("UPDATE resources SET status = 'Available'")
             
             conn.commit()
@@ -314,7 +311,6 @@ def admin_required(f):
             user = conn.execute("SELECT role FROM users WHERE email = ?", (user_email,)).fetchone()
             conn.close()
 
-            # --- FIXED LOGIC ---
             allowed_roles = ['admin', 'hod', 'dean']
             
             if not user or user['role'].lower() not in allowed_roles:
@@ -480,7 +476,7 @@ def admin_delete_market(item_id):
 # --- MARKETPLACE: FETCH (Filtered for Lost/Found) ---
 @app.route("/api/marketplace", methods=["GET"])
 def get_marketplace():
-    category = request.args.get("category") # 'lostfound' or 'market'
+    category = request.args.get("category") 
     try:
         with get_db() as conn:
             query = '''
@@ -510,8 +506,7 @@ def add_marketplace_item():
     title = data.get("title")
     description = data.get("description")
     
-    # Input clean karo taaki database constraint hit na ho
-    m_type = str(data.get("type")).strip().capitalize() # 'lost' -> 'Lost'
+    m_type = str(data.get("type")).strip().capitalize()
 
     valid_types = ['Lost', 'Found', 'Sell', 'Trade']
     if m_type not in valid_types:
@@ -540,12 +535,10 @@ def get_all_resources():
         now_ist = (datetime.utcnow() + timedelta(hours=5, minutes=30)).strftime('%Y-%m-%dT%H:%M')
         
         with get_db() as conn:
-            # 2. AUTO-RELEASE: Jo 'Occupied' hain aur unka time nikal chuka hai
             occupied_nodes = conn.execute("SELECT id FROM resources WHERE LOWER(status) = 'occupied'").fetchall()
             
             for node in occupied_nodes:
                 res_id = node['id']
-                # Latest confirmed booking uthao
                 latest = conn.execute('''
                     SELECT end_time FROM bookings 
                     WHERE resource_id = ? AND status = 'Confirmed' 
