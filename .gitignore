@@ -13,10 +13,10 @@ env/
 __pycache__/
 *.py[cod]
 
-# SQLite Databases
-*.db
-nofy.db
-backend/nofy.db
+# SQLite Temporary Files
+*.db-journal
+*.db-wal
+*.db-shm
 
 # Environment Variables
 .env
